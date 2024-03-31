@@ -13,14 +13,30 @@ class Connect {
      * @param string $host hostname
      * @param string $username username
      * @param string $password password
-     * @param string $config config class (optional)
+     * @param object $config config class (optional)
      */
-    public function __construct(string $db_name,string $host='127.0.0.1',string $username='root',string $password='') {
+    public function __construct(object $config) {
         try {
+            $this->CheckConfig($config);
+            $host = $config::hostname;
+            $username = $config::username;
+            $password = $config::password;
+            $db_name = $config::database;
             $this->database = new \PDO("mysql:host=$host;dbname=".$db_name, $username, $password);
             $this->database->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         } catch(\PDOException $e) {
             throw new exceptions\init($e->getMessage());
         }
+    }
+
+
+
+
+    private function CheckConfig(object $config) {
+        $const_list = ['hostname','username','password','database'];
+        $config = get_class($config);
+        $reflect = new \ReflectionClass($config);
+        $invalid_list = array_diff($const_list,array_keys($reflect->getConstants()));
+        return count($invalid_list) == 0 ? true : throw new exceptions\config("Config class is incomplete, [".$invalid_list[0]."] constant is not defined.");
     }
 }
