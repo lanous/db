@@ -12,9 +12,10 @@ class Mysql implements Face {
         array_walk($columns,function (array $column_data,string $column_name) {
             $DataType = $column_data[\Lanous\db\Structure\Table::Column["DataType"]];
             $QueryType = $DataType::Query;
-            $DataSize = $column_data[\Lanous\db\Structure\Table::Column["DataSize"]];
+            $DataSize = $column_data[\Lanous\db\Structure\Table::Column["DataSize"]] ?? false;
             $AutoIncrement = $column_data[\Lanous\db\Structure\Table::Column["AutoIncrement"]] ?? false;
-            $this->query .= "'$column_name' $QueryType($DataSize) ";
+            $this->query .= "`$column_name` $QueryType";
+            $this->query .= $DataSize != false ? "($DataSize)" : " ";
             $this->query .= ($AutoIncrement == false) ? "" : "NOT NULL AUTO_INCREMENT ";
             $this->query .= ",";
         });

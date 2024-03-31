@@ -4,11 +4,12 @@ namespace Lanous\db\Table;
 
 class Insert extends \Lanous\db\Lanous {
     use \Lanous\db\ValuePreparation;
-    private $data,$table_data,$table_name,$dbsm,$column_name,$columns_list;
+    private $data,$table_data,$table_name,$dbsm,$column_name,$columns_list,$database;
     
-    public function __construct($table_name,$dbsm) {
+    public function __construct($table_name,$dbsm,$database) {
         $this->table_name = $table_name;
         $this->dbsm = $dbsm;
+        $this->database = $database;
         $data = new $table_name();
         $this->table_data = $data->Result();
         $columns = $this->table_data[\Lanous\db\Structure\Table::Result["Columns"]];
@@ -33,7 +34,8 @@ class Insert extends \Lanous\db\Lanous {
     public function Push() {
         $class_explode = explode("\\",$this->table_name);
         $table_name = array_pop($class_explode);
-        var_dump($this->MakeQuery($this->dbsm)->Insert($table_name, $this->data));
+        $query = $this->MakeQuery($this->dbsm)->Insert($table_name, $this->data);
+        return $this->database->exec($query);
     }
 
 }

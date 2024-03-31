@@ -2,14 +2,12 @@
 
 namespace MyLanous\DataTypes;
 
-class Varchar implements \Lanous\db\Structure\DataType {
-    const Query = "varchar";
+class Integer implements \Lanous\db\Structure\DataType {
+    const Query = "int";
     private $data;
     public function __construct($data) { $this->data = $this->Extraction($data); }
     public function Injection($data) { return $data; }
     public function Extraction($data) { return $data; }
     public function Validation($data): bool { return true; }
-    public function test($x,$y) {
-        return "test ".$x." and ".$y." for ".$this->data;
-    }
+
 }
