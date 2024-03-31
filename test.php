@@ -16,14 +16,16 @@ class LanousConfig {
 
 $database = new Database\Connect(new LanousConfig);
 
+$Users = $database->Load(MyLanous\Plugins\Test::class);
+var_dump($Users->GetName (2));
+
+
 /*
 echo $database->Table(MyLanous\Table\Users::class)->Insert()
     ->Key(MyLanous\Table\Users::first_name)->Value("Mohammad")
     ->Key(MyLanous\Table\Users::last_name)->Value("azad")
     ->Key(MyLanous\Table\Users::address)->Value(["city"=>"karaj"])
 ->Push();
-*/
-
 
 $Table = $database->Table(MyLanous\Table\Users::class)->Select("*");
 
@@ -39,3 +41,5 @@ $Where2 = $Table
 
 
 var_dump($Where1->{MyLanous\Table\Users::first_name}->value);
+
+*/

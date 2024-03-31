@@ -44,6 +44,9 @@ class Connect extends Lanous {
     public function Table (string $table_name) {
         return new Table\Table($table_name,$this->dbsm,$this->database);
     }
+    public function Load (string $plugin_class,$data=null) {
+        return new $plugin_class($this->database,$this->dbsm,$data);
+    }
 
     private function CheckConfig(object $config) {
         $const_list = ['hostname','username','password','database','dbsm','project_name'];
@@ -54,7 +57,6 @@ class Connect extends Lanous {
     }
     private function MakeProject(string $project_name) {
         $this->MakeDirectory($project_name);
-
         # ------- Tables ------- #
         $this->MakeDirectory($project_name."/Tables");
             $this->Copy(__DIR__."/Examples/Table.php",$project_name."/Tables/Users.php");
@@ -62,6 +64,8 @@ class Connect extends Lanous {
         $this->MakeDirectory($project_name."/DataTypes");
             $this->Copy(__DIR__."/Examples/DataTypes/Varchar.php",$project_name."/DataTypes/Varchar.php");
             $this->Copy(__DIR__."/Examples/DataTypes/Integer.php",$project_name."/DataTypes/Integer.php");
+            $this->Copy(__DIR__."/Examples/DataTypes/ArrayData.php",$project_name."/DataTypes/ArrayData.php");
+        $this->MakeDirectory($project_name."/Plugins");
     }
     private function AutoLoad($project) {
         $directores = scandir($project);
