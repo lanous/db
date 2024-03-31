@@ -1,8 +1,8 @@
 <?php
 
-namespace lanous\db;
+namespace Lanous\db;
 
-class connect {
+class Connect {
 
     private $database;
     protected $config;
@@ -15,13 +15,12 @@ class connect {
      * @param string $password password
      * @param string $config config class (optional)
      */
-    public function __construct(string $db_name,string $host='127.0.0.1',string $username='root',string $password='',object $config='') {
+    public function __construct(string $db_name,string $host='127.0.0.1',string $username='root',string $password='') {
         try {
             $this->database = new \PDO("mysql:host=$host;dbname=".$db_name, $username, $password);
-            $this->database->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->config = $config;
-        } catch(PDOException $e) {
-            throw new lanous\db\exceptions\connect($e->getMessage());
+            $this->database->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        } catch(\PDOException $e) {
+            throw new exceptions\init($e->getMessage());
         }
     }
 }

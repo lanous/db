@@ -1,5 +1,6 @@
 <?php
 
-include("src/connect.php");
+include("vendor/autoload.php");
 
-$database = new lanous\db\connect("lanous");
+use Lanous\db as Database;
+$database = new Database\Connect("lanous");
