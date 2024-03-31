@@ -7,13 +7,11 @@ class Connect {
     private $database;
     protected $config;
 
+    public $Setting;
+
     /**
      * Establishing a connection with the database
-     * @param string $db_name database name
-     * @param string $host hostname
-     * @param string $username username
-     * @param string $password password
-     * @param object $config config class (optional)
+     * @param object $config config class
      */
     public function __construct(object $config) {
         try {
@@ -22,6 +20,7 @@ class Connect {
             $username = $config::username;
             $password = $config::password;
             $db_name = $config::database;
+            $project = $config::project;
             $this->database = new \PDO("mysql:host=$host;dbname=".$db_name, $username, $password);
             $this->database->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
         } catch(\PDOException $e) {
@@ -29,11 +28,15 @@ class Connect {
         }
     }
 
-
-
+    /**
+     * Open the database settings
+     */
+    public function Settings () {
+        return new Settings\Settings();
+    }
 
     private function CheckConfig(object $config) {
-        $const_list = ['hostname','username','password','database'];
+        $const_list = ['hostname','username','password','database','project'];
         $config = get_class($config);
         $reflect = new \ReflectionClass($config);
         $invalid_list = array_diff($const_list,array_keys($reflect->getConstants()));

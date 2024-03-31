@@ -9,6 +9,7 @@ class LanousConfig {
     const username = 'root';
     const password = '';
     const database = "lanous";
+    const project = "MyLanous";
 }
 
 $database = new Database\Connect(new LanousConfig);
