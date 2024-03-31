@@ -23,6 +23,7 @@ class Connect {
             $project = $config::project;
             $this->database = new \PDO("mysql:host=$host;dbname=".$db_name, $username, $password);
             $this->database->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->MakeProject($project);
         } catch(\PDOException $e) {
             throw new exceptions\init($e->getMessage());
         }
@@ -41,5 +42,14 @@ class Connect {
         $reflect = new \ReflectionClass($config);
         $invalid_list = array_diff($const_list,array_keys($reflect->getConstants()));
         return count($invalid_list) == 0 ? true : throw new exceptions\config("Config class is incomplete, [".$invalid_list[0]."] constant is not defined.");
+    }
+    private function MakeProject(string $project_name) {
+        if(!file_exists($project_name)) {
+            mkdir($project_name);
+            # ------- Tables ------- #
+            mkdir($project_name."/Tables");
+            copy(__DIR__."/Examples/Table.php",$project_name."/Tables/Users.php");
+            copy(__DIR__."/Examples/Guides/Table.html",$project_name."/Tables/Guide.html");
+        }
     }
 }
