@@ -4,7 +4,7 @@ namespace Lanous\db;
 
 class Connect extends Lanous {
 
-    private $project_name,$dbsm,$database;
+    private $project_name,$project_directory,$dbsm,$database;
 
     /**
      * Establishing a connection with the database
@@ -23,6 +23,7 @@ class Connect extends Lanous {
             $password = $config::password;
             $db_name = $config::database;
             $project = $config::project_name;
+            $this->project_directory = $config::project_dir;
             $this->project_name = $project;
             $this->MakeProject($project);
             $this->Autoload($project);
@@ -68,11 +69,11 @@ class Connect extends Lanous {
         $this->MakeDirectory($project_name."/Plugins");
     }
     private function AutoLoad($project) {
-        $directores = scandir($project);
+        $directores = scandir($this->project_directory."\\".$project);
         unset($directores[0]);
         unset($directores[1]);
         foreach ($directores as $directory) {
-            foreach(glob($project."/".$directory."/*.php") as $Files) {
+            foreach(glob($this->project_directory."\\".$project."\\".$directory."\\*.php") as $Files) {
                 include_once($Files);
             }
         }
@@ -90,9 +91,9 @@ class Connect extends Lanous {
         },$Tables);
     }
     private function MakeDirectory($directory) {
-        return !file_exists($directory) ? mkdir($directory) : true;
+        return !file_exists($this->project_directory."\\".$directory) ? mkdir($this->project_directory."\\".$directory) : true;
     }
     private function Copy($from,$to) {
-        return !file_exists($to) ? copy($from,$to) : true;
+        return !file_exists($this->project_directory."\\".$to) ? copy($from,$this->project_directory."\\".$to) : true;
     }
 }
