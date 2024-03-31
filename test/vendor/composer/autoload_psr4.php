@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Lanous\\db\\' => array($baseDir . '/src'),
+    'Lanous\\db\\' => array($baseDir . '/../src'),
 );

@@ -16,7 +16,7 @@ class ComposerStaticInitc589caa3cd1b1d58c405aef7b12608c9
     public static $prefixDirsPsr4 = array (
         'Lanous\\db\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src',
+            0 => __DIR__ . '/../..' . '/../src',
         ),
     );
 

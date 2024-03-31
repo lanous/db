@@ -10,3 +10,5 @@ class Test extends \Lanous\db\Structure\Plugins {
         return $User->{\MyLanous\Table\Users::first_name}->value;
     }
 }
+
+?>
