@@ -9,7 +9,8 @@ class Wallet extends \Lanous\db\Structure\Table {
         $this->AddColumn("id")
             ->DataType(\MyLanous\DataTypes\Integer::class)
             ->Size(255)
-            ->AutoIncrement(true);
+            ->AutoIncrement(true)
+            ->Primary();
 
         $this->AddColumn("usd")
             ->DataType(\MyLanous\DataTypes\Integer::class)

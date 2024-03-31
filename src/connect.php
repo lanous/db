@@ -26,9 +26,9 @@ class Connect extends Lanous {
             $this->project_name = $project;
             $this->MakeProject($project);
             $this->Autoload($project);
-
             $this->database = new \PDO("mysql:host=$host;dbname=".$db_name, $username, $password);
             $this->database->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            $this->MakeTables ();
         } catch(\PDOException $e) {
             throw new exceptions\init($e->getMessage());
         }
@@ -42,7 +42,7 @@ class Connect extends Lanous {
     }
 
     public function Table (string $table_name) {
-        return new Table\Table($table_name,$this->dbsm);
+        return new Table\Table($table_name,$this->dbsm,$this->database);
     }
 
     private function CheckConfig(object $config) {
@@ -72,6 +72,8 @@ class Connect extends Lanous {
                 include_once($Files);
             }
         }
+    }
+    private function MakeTables () {
         $Tables = array_values(array_filter(get_declared_classes(),fn ($data) => is_subclass_of($data,\Lanous\db\Structure\class_name)));
         array_map(function ($class_name) {
             $class_explode = explode("\\",$class_name);
@@ -80,6 +82,7 @@ class Connect extends Lanous {
             $table_name = array_pop($class_explode);
             $data = new $class_name();
             $MakeQuery = $this->MakeQuery($this->dbsm)->MakeTable($table_name, $data->Result());
+            $this->database->exec($MakeQuery);
         },$Tables);
     }
     private function MakeDirectory($directory) {

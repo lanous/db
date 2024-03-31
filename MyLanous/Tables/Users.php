@@ -31,9 +31,8 @@ class Users extends \Lanous\db\Structure\Table {
             ->Size(255);
 
         $this->AddColumn(self::address)
-            ->DataType(\MyLanous\DataTypes\ArrayData::class)
-            ->Size(255);
-
+            ->DataType(\MyLanous\DataTypes\ArrayData::class);
+            
         # ---------- Data Handling
         $this->Injection(self::first_name)
             ->Evaluation(function ($data) {
