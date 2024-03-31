@@ -11,8 +11,8 @@ class Settings {
      * Table settings
      */
     public $Table;
-    public function __construct() {
-        $this->DataBase = new Database();
-        $this->Table = new Table();
+    public function __construct($database) {
+        $this->DataBase = new Database($database);
+        $this->Table = new Table($database);
     }
 }

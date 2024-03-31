@@ -9,7 +9,18 @@ class LanousConfig {
     const username = 'root';
     const password = '';
     const database = "lanous";
-    const project = "MyLanous";
+    const dbsm = "mysql";
+    const project_name = "MyLanous";
 }
 
+
 $database = new Database\Connect(new LanousConfig);
+
+$database->Table(MyLanous\Table\Users::class)->Insert()
+    ->Key(MyLanous\Table\Users::first_name)->Value("Mohammad")
+    ->Key(MyLanous\Table\Users::last_name)->Value("azad")
+    ->Key(MyLanous\Table\Users::address)->Value(["city"=>"karaj"])
+->Push();
+
+
+// $database->Table(MyLanous\Table\Users::class);
