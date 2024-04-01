@@ -34,11 +34,11 @@ class Users extends \Lanous\db\Structure\Table {
             ->DataType(\MyLanous\DataTypes\ArrayData::class);
             
         # ---------- Data Handling
-        $this->Injection(self::first_name)
+        /*$this->Injection(self::first_name)
             ->Evaluation(function ($data) {
                 if ($data == "mohammad")
                     throw new \Exception("you can't set mohammad name");
-            });
+            });*/
         $this->Injection(self::first_name)
             ->Edit(fn($data) => strtolower($data));
         $this->Injection(self::last_name)

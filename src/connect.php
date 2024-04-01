@@ -42,11 +42,15 @@ class Connect extends Lanous {
         return new Settings\Settings($this->database);
     }
 
-    public function Table (string $table_name) {
+    public function OpenTable (string $table_name) {
         return new Table\Table($table_name,$this->dbsm,$this->database);
     }
     public function Load (string $plugin_class,$data=null) {
         return new $plugin_class($this->database,$this->dbsm,$data);
+    }
+    public function GetTables () {
+        $stmt = $this->database->query("SHOW TABLES");
+        return array_keys($stmt->fetchAll(\PDO::FETCH_UNIQUE));
     }
 
     private function CheckConfig(object $config) {
@@ -85,9 +89,11 @@ class Connect extends Lanous {
             if ($class_explode[0] != $this->project_name)
                 throw new Exceptions\Structure("the namespace set does not match the project name. class: [".$class_name."]");
             $table_name = array_pop($class_explode);
-            $data = new $class_name();
-            $MakeQuery = $this->MakeQuery($this->dbsm)->MakeTable($table_name, $data->Result());
-            $this->database->exec($MakeQuery);
+            if (!in_array(strtolower($table_name),$this->GetTables())){
+                $data = new $class_name();
+                $MakeQuery = $this->MakeQuery($this->dbsm)->MakeTable($table_name, $data->Result());
+                $this->database->exec($MakeQuery);
+            }
         },$Tables);
     }
     private function MakeDirectory($directory) {
