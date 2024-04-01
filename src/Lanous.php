@@ -3,6 +3,8 @@
 namespace Lanous\db;
 
 class Lanous {
+    const ORDER_ASC = "ASC";
+    const ORDER_DESC = "DESC";
     final protected function MakeQuery($dbsm) {
         $dbsm = ucfirst($dbsm);
         $class = "\\Lanous\\db\\Query\\".$dbsm;
@@ -16,6 +18,8 @@ trait ValuePreparation
         $table = new $table_class();
         $table = $table->Result();
         $DataHandling = $table[\Lanous\db\Structure\Table::Result['DataHandling']];
+        $DataType = new $table[\Lanous\db\Structure\Table::Result['Columns']][$column_name]["type"]($value);
+
         if ($method == "get") {
             if (isset($DataHandling["Extract"][$column_name])) {
                 if(isset($DataHandling["Extract"][$column_name][\Lanous\db\Structure\Table::DataHandling["Evaluation"]])) {
@@ -25,7 +29,6 @@ trait ValuePreparation
                     $value = $DataHandling["Extract"][$column_name][\Lanous\db\Structure\Table::DataHandling["Edit"]]($value);
                 }
             }
-            $DataType = new $table[\Lanous\db\Structure\Table::Result['Columns']][$column_name]["type"]($value);
             $result = [];
             $result["methods"] = $DataType;
             $result["value"] = $DataType->Extraction($value);

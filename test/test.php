@@ -17,9 +17,38 @@ class LanousConfig {
 
 $database = new Database\Connect(new LanousConfig);
 
+$Table = $database->OpenTable (MyLanous\Table\Users::class);
+$Users = $database->Load(MyLanous\Plugins\Test::class);
+echo "Hi ".$Users->GetName (1).PHP_EOL;
+
+$Where = $Table->Where(MyLanous\Table\Users::ID,"=",1);
+
+$Table->Update()->Edit("password","987654321")->Where($Where)->Set();
+
+var_dump($Table->Select()->Where($Where)->Result()->Rows[0]->password->value);
+
+$Table->Update()->Edit("password","123456789")->Where($Where)->Set();
+
+var_dump($Table->Select()->Where($Where)->Result()->Rows[0]->password->value);
+
+
+/*
+$data = $Table->Select(
+    column: "*",
+    order_by: $Order,
+    distinct: true
+)->Where("first_name","=","mohammad")->Result();
+*/
+
+
+
+// $Table->Select("*",order_by: );
+
+
+/*
 $Users = $database->Load(MyLanous\Plugins\Test::class);
 var_dump($Users->GetName (2));
-
+*/
 
 /*
 echo $database->Table(MyLanous\Table\Users::class)->Insert()
@@ -43,4 +72,17 @@ $Where2 = $Table
 
 var_dump($Where1->{MyLanous\Table\Users::first_name}->value);
 
+*/
+
+/*
+// method 1
+$Order = $Table::Order([
+        MyLanous\Table\Users::first_name=>Database\Lanous::ORDER_ASC,
+        MyLanous\Table\Users::last_name=>Database\Lanous::ORDER_DESC
+    ]);
+// method 2
+$Order = $Table::Order([
+    MyLanous\Table\Users::first_name,
+    MyLanous\Table\Users::last_name
+],Database\Lanous::ORDER_ASC);
 */

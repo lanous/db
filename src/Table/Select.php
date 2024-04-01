@@ -4,53 +4,36 @@ namespace Lanous\db\Table;
 
 class Select extends \Lanous\db\Lanous {
     private $where,$query;
-    private $table_name,$dbsm,$column_name,$database;
-    public function __construct($table_name,$dbsm,$database,$column_name) {
+    private $table_name,$dbsm,$column_name,$database,$order_by=false;
+    public function __construct($table_name,$dbsm,$database,$column_name,array $keywords=[]) {
         $this->table_name = $table_name;
         $this->dbsm = $dbsm;
         $this->column_name = $column_name;
         $this->database = $database;
         $class_explode = explode("\\",$this->table_name);
         $table_name = array_pop($class_explode);
-        $this->query = "SELECT $column_name FROM `$table_name`";
+        $distinct = $keywords["distinct"] == true ? "DISTINCT" : "";
+        $this->query = "SELECT ".$distinct." $column_name FROM `$table_name`";
+        if ($keywords["order_by"] != new \stdClass()) {
+            $this->order_by = " ORDER BY ";
+            array_walk($keywords["order_by"],function ($direction,$column_name) {
+                $this->order_by .= $column_name." ".$direction.",";
+            });
+            $this->order_by = rtrim($this->order_by,",");
+        }
     }
-    public function Where($key,$value) {
-        return new Where($this->database,$this->table_name,$this->query,$key,$value);
+    public function Where (object $obj) {
+        $this->query .= " WHERE ".$obj->where;
+        return $this;
     }
 
     public function Result () {
         $Result = new Result($this->database,$this->table_name);
-        $Result->Run($this->query);
+        $order_by = $this->order_by != false ? $this->order_by : "";
+        $Result->Run($this->query.$order_by);
         return $Result;
     }
-}
 
-
-class Where {
-    public $End;
-    private $where;
-    private $query;
-    private $database,$table_name;
-
-    public function __construct($database,$table_name,$query,$key,$value) {
-        $this->database = $database;
-        $this->table_name = $table_name;
-        $this->query = $query;
-        $this->where = $key." = '".$value."'";
-    }
-    public function And($key,$value) {
-        $this->where .= " AND ".$key." = '".$value."'";
-        return $this;
-    }
-    public function Or($key,$value) {
-        $this->where .= " OR ".$key." = '".$value."'";
-        return $this;
-    }
-    public function Result () {
-        $Result = new Result($this->database,$this->table_name);
-        $Result->Run($this->query." WHERE ".$this->where);
-        return $Result;
-    }
 }
 
 
