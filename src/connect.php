@@ -38,14 +38,14 @@ class Connect extends Lanous {
     /**
      * Open the database settings
      */
-    public function Settings () {
+    /*public function Settings () {
         return new Settings\Settings($this->database);
-    }
+    }*/
 
     public function OpenTable (string $table_name) {
         return new Table\Table($table_name,$this->dbsm,$this->database);
     }
-    public function Load (string $plugin_class,$data=null) {
+    public function LoadPlugin (string $plugin_class,$data=null) {
         return new $plugin_class($this->database,$this->dbsm,$data);
     }
     public function GetTables () {

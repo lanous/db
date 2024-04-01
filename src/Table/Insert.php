@@ -3,7 +3,8 @@
 namespace Lanous\db\Table;
 
 class Insert extends \Lanous\db\Lanous {
-    use \Lanous\db\ValuePreparation;
+    use \Lanous\db\Traits\ValuePreparation;
+    
     private $data,$table_data,$table_name,$dbsm,$column_name,$columns_list,$database;
     
     public function __construct($table_name,$dbsm,$database) {

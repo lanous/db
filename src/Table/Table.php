@@ -11,8 +11,13 @@ class Table extends \Lanous\db\Lanous {
         $this->table_name = $table_name;
         $this->database = $database;
     }
-    public function Select($column="*",$distinct=false,object $order_by=new \stdClass()) {
-        return new Select($this->table_name,$this->dbsm,$this->database,$column,["distinct"=>$distinct,"order_by"=>$order_by]);
+    public function Select($column="*",$distinct=false,object $order_by=new \stdClass(),$limit=0,$offset=0) {
+        return new Select($this->table_name,$this->dbsm,$this->database,$column,[
+            "distinct"=>$distinct,
+            "order_by"=>$order_by,
+            "limit"=>$limit,
+            "offset"=>$offset
+        ]);
     }
     public function Update() {
         return new Update($this->table_name,$this->dbsm,$this->database);
@@ -20,12 +25,21 @@ class Table extends \Lanous\db\Lanous {
     public function Insert() {
         return new Insert($this->table_name,$this->dbsm,$this->database);
     }
+    public function Delete(Where $where=null) {
+        $Delete = new Delete($this->table_name,$this->dbsm,$this->database,$where);
+        return $Delete->result;
+    }
     public function Describe () {
         $class_explode = explode("\\",$this->table_name);
         $table_name = array_pop($class_explode);
         $stmt = $this->database->query("DESCRIBE ".$table_name);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
+    /* public function Alter () {
+
+    } */
+
+
     public static function Order(array $columns,string $direction=null) : object {
         $return = [];
         if ($direction != null) {
