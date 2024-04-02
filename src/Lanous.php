@@ -2,6 +2,12 @@
 
 namespace Lanous\db;
 
+/**
+ * @author Mohammad Azad
+ * @package Lanous\db
+ * @version 1.0.0
+ * @link https://github.com/lanous/db/
+ */
 class Lanous {
     const ORDER_ASC = "ASC";
     const ORDER_DESC = "DESC";

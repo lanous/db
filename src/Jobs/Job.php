@@ -2,7 +2,7 @@
 
 namespace Lanous\db\Jobs;
 
-class Make {
+class Job {
     private $database,$dbsm;
     private $datas,$primarys,$sensitivity;
     public function __construct($database,$dbsm) {
@@ -25,7 +25,7 @@ class Make {
      */
     public function Get ($table_name,$primary_value) {
         if(isset($this->datas[$table_name][$primary_value])) {
-            throw new \Lanous\db\Exceptions\Jobs("This data has already been extracted; you cannot retrieve the same data twice.",\Lanous\db\Exceptions\Jobs::ERR_DUPLICTE);
+            throw new \Lanous\db\Exceptions\Jobs(\Lanous\db\Exceptions\Jobs::ERR_DUPLICTE);
         }
         $Table = new \Lanous\db\Table\Table($table_name,$this->dbsm,$this->database);
         if (!isset($this->primarys[$table_name])) {
@@ -37,7 +37,7 @@ class Make {
         }
         $Where = $Table->Where($this->primarys[$table_name],"=",$primary_value);
         $Datas = $Table->Select("*")->Extract($Where);
-        $Datas = $Datas->Rows[0] ?? throw new \Lanous\db\Exceptions\Jobs("The data you are looking for does not exist in this table.",\Lanous\db\Exceptions\Jobs::ERR_CANTFIND);
+        $Datas = $Datas->Rows[0] ?? throw new \Lanous\db\Exceptions\Jobs(\Lanous\db\Exceptions\Jobs::ERR_CANTFIND);
         $this->datas[$table_name][$primary_value] = $Datas;
         return (object) ['table_name'=>$table_name,'data'=>$Datas];
     }
@@ -53,12 +53,12 @@ class Make {
             $result = $Table->Update()->Edit($key,$value)->Push($where);
             if ($result == 0 and ($this->sensitivity == 1 or $this->sensitivity == 3)) {
                 $this->RestoreData();
-                throw new \Lanous\db\Exceptions\Jobs("No data was changed and the restore operation was performed.",\Lanous\db\Exceptions\Jobs::ERR_NOCHANGE);
+                throw new \Lanous\db\Exceptions\Jobs(\Lanous\db\Exceptions\Jobs::ERR_NOCHANGE);
             }
         } catch (\Throwable $th) {
             $this->RestoreData();
             if(get_class($th) != "Lanous\db\Exceptions\Jobs") {
-                throw new \Lanous\db\Exceptions\Jobs("The execution of the request encountered an error and the data was recovered.",\Lanous\db\Exceptions\Jobs::ERR_EXPERROR);
+                throw new \Lanous\db\Exceptions\Jobs(\Lanous\db\Exceptions\Jobs::ERR_EXPERROR);
             } else {
                 throw $th;
             }
@@ -77,7 +77,7 @@ class Make {
                     try {
                         $Table->Update()->Edit($column_name,$value->value)->Push($Where);
                     } catch (\Throwable $th) {
-                        throw new \Lanous\db\Exceptions\Jobs("The data recovery operation has encountered a problem.",\Lanous\db\Exceptions\Jobs::ERR_RECOVERY);
+                        throw new \Lanous\db\Exceptions\Jobs(\Lanous\db\Exceptions\Jobs::ERR_RECOVERY);
                     }
                 }
             }

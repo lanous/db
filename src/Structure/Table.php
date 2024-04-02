@@ -63,7 +63,7 @@ class Column {
 
     public function DataType($object) {
         if (!class_exists($object))
-            throw new \Lanous\db\Exceptions\Structure("the class passed to the first argument does not exists");
+            throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_CLASSNF);
         $this->CheckDataTypes ($object);
 
         Table::$Column[$this->name][Table::Column["DataType"]] = $object;
@@ -85,7 +85,7 @@ class Column {
 
     public function Primary() {
         if (isset(Table::$Setting[Table::Setting["Primary"]]))
-            throw new \Lanous\db\Exceptions\Structure("Multiple primary key defined");
+            throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_MPLEPKY);
         Table::$Setting[Table::Setting["Primary"]] = $this->name;
         return $this;
     }
@@ -96,7 +96,7 @@ class Column {
         $const_list = ['Query'];
         $reflect = new \ReflectionClass($object);
         $invalid_list = array_diff($const_list,array_keys($reflect->getConstants()));
-        return count($invalid_list) == 0 ? true : throw new \Lanous\db\Exceptions\Structure("$object class is incomplete, [".$invalid_list[0]."] constant is not defined.");
+        return count($invalid_list) == 0 ? true : throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_DTYPEIC);
     }
 }
 
