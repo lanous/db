@@ -10,7 +10,7 @@ class LanousConfig {
     const password = '';
     const database = "lanous";
     const dbsm = "mysql";
-    const project_name = "Azad";
+    const project_name = "MyLanous";
     const project_dir = __DIR__;
 }
 
@@ -20,7 +20,7 @@ $database = new Database\Connect(new LanousConfig);
 try {
 
     $Job = $database->NewJob();
-        $Job->Sensitivity(1);
+        $Job->Sensitivity(2);
 
         $User1 = $Job->Get(MyLanous\Table\Users::class,1);
         $User2 = $Job->Get(MyLanous\Table\Users::class,2);

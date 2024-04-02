@@ -16,23 +16,32 @@ class Insert extends \Lanous\db\Lanous {
         $columns = $this->table_data[\Lanous\db\Structure\Table::Result["Columns"]];
         $this->columns_list = array_keys($columns);
     }
-    public function Key(string $column_name) {
+    /**
+     * The name of the data table column to which you want to assign a value.
+     */
+    public function Key(string $column_name) : Insert {
         if ($this->column_name != null)
-            throw new \Lanous\db\Exceptions\Structure("The Insert pattern has not been adhered to correctly.");
+            throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_INSTPTN);
         if (!in_array($column_name,$this->columns_list))
-            throw new \Lanous\db\Exceptions\Structure("This column is not defined in the table class (“".$this->table_name."”).");
+            throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_CLUMNND);
         $this->column_name = $column_name;
         $this->data[$this->column_name] = "";
         return $this;
     }
-    public function Value($value) {
+    /**
+     * The value you want to assign to this column
+     */
+    public function Value(mixed $value) : Insert {
         if ($this->column_name == null)
-            throw new \Lanous\db\Exceptions\Structure("The Insert pattern has not been adhered to correctly.");
+            throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_INSTPTN);
         $this->data[$this->column_name] = $this->ValuePreparation($this->table_name,$this->column_name,$value,'send');
         $this->column_name = null;
         return $this;
     }
-    public function Push() {
+    /**
+     * submit to create a new row
+     */
+    public function Push() : bool {
         $class_explode = explode("\\",$this->table_name);
         $table_name = array_pop($class_explode);
         $query = $this->MakeQuery($this->dbsm)->Insert($table_name, $this->data);
