@@ -52,6 +52,13 @@ class Connect extends Lanous {
         $stmt = $this->database->query("SHOW TABLES");
         return array_keys($stmt->fetchAll(\PDO::FETCH_UNIQUE));
     }
+    public function NewJob () {
+        return new Jobs\Make($this->database,$this->dbsm);
+    }
+
+
+
+
 
     private function CheckConfig(object $config) {
         $const_list = ['hostname','username','password','database','dbsm','project_name'];

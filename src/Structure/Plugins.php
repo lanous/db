@@ -15,4 +15,8 @@ abstract class Plugins {
     public function Call (string $plugin_class,$data=null) {
         return new $plugin_class($this->database,$this->dbsm,$data);
     }
+    public function NewJob () {
+        return new \Lanous\db\Jobs\Make($this->database,$this->dbsm);
+    }
+
 }

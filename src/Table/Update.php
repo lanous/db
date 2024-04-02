@@ -21,7 +21,6 @@ class Update extends \Lanous\db\Lanous {
         $class_explode = explode("\\",$this->table_name);
         $table_name = array_pop($class_explode);
         $query = $this->MakeQuery($this->dbsm)->Update($table_name, $this->new_values, $where);
-        echo $query.PHP_EOL;
         return $this->database->exec($query);
     }
 }
