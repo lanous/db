@@ -17,6 +17,38 @@ class LanousConfig {
 
 $database = new Database\Connect(new LanousConfig);
 
+try {
+
+    $Job = $database->NewJob();
+        $Job->Sensitivity(1);
+
+        $User1 = $Job->Get(MyLanous\Table\Users::class,1);
+        $User2 = $Job->Get(MyLanous\Table\Users::class,2);
+
+        $Job->Edit($User1,"amount",50000);
+        $Job->Edit($User2,"amount",100000);
+
+} catch (\Lanous\db\Exceptions\Jobs $error) {
+
+    if ($error->getCode() == $error::ERR_RECOVERY) {
+        // -- Be sure to specify this case in the catch --
+        // If the error code is 700, it means that the data recovery has encountered an error
+        // and it is better to check the operation manually.
+    } elseif ($error->getCode() == $error::ERR_NOCHANGE) {
+        // No changes were made to one of the rows
+    } elseif ($error->getCode() == $error::ERR_EXPERROR) {
+        // An error occurred while applying the changes.
+    } elseif ($error->getCode() == $error::ERR_CANTFIND) {
+        // One of the data was not found in the get method.
+    } elseif ($error->getCode() == $error::ERR_DUPLICTE) {
+        // When the repeated get method is written, you will encounter this error.
+    }
+
+}
+
+
+
+/*
 $Table = $database->OpenTable (MyLanous\Table\Users::class);
 
 $Users = $database->LoadPlugin(MyLanous\Plugins\Test::class);
@@ -36,7 +68,7 @@ var_dump($Table->Select(
     limit: 10
 )->Extract($Where));
 
-
+*/
 //$Table->Update()->Edit("password","987654321")->Push();
 
 /*
