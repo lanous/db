@@ -1,7 +1,6 @@
 <?php
 
 namespace Lanous\db\Structure;
-const class_name = "\Lanous\db\Structure\Table";
 
 class Table {
     const Column = ["DataType" => "type", "DataSize" => "size", "AutoIncrement" => "auto_increment"];

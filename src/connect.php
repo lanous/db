@@ -69,15 +69,16 @@ class Connect extends Lanous {
     }
     private function MakeProject(string $project_name) {
         $this->MakeDirectory($project_name);
-        # ------- Tables ------- #
-        $this->MakeDirectory($project_name."/Tables");
-            $this->Copy(__DIR__."/Examples/Table.php",$project_name."/Tables/Users.php");
         # ----- Data Types ----- #
         $this->MakeDirectory($project_name."/DataTypes");
-            $this->Copy(__DIR__."/Examples/DataTypes/Varchar.php",$project_name."/DataTypes/Varchar.php");
-            $this->Copy(__DIR__."/Examples/DataTypes/Integer.php",$project_name."/DataTypes/Integer.php");
-            $this->Copy(__DIR__."/Examples/DataTypes/ArrayData.php",$project_name."/DataTypes/ArrayData.php");
+        foreach (glob(__DIR__."/Examples/DataTypes/*.phps") as $filename) {
+            $to_filename = explode("/",str_replace(".phps",".php",$filename));
+            $to_filename = array_pop($to_filename);
+            $this->Copy($filename,$project_name."//DataTypes//".$to_filename);
+
+        }
         $this->MakeDirectory($project_name."/Plugins");
+        $this->MakeDirectory($project_name."/Tables");
     }
     private function AutoLoad($project) {
         $directores = scandir($this->project_directory."\\".$project);
@@ -90,7 +91,7 @@ class Connect extends Lanous {
         }
     }
     private function MakeTables () {
-        $Tables = array_values(array_filter(get_declared_classes(),fn ($data) => is_subclass_of($data,\Lanous\db\Structure\class_name)));
+        $Tables = array_values(array_filter(get_declared_classes(),fn ($data) => is_subclass_of($data,\Lanous\db\Structure\Table::class)));
         array_map(function ($class_name) {
             $class_explode = explode("\\",$class_name);
             if ($class_explode[0] != $this->project_name)
@@ -107,6 +108,8 @@ class Connect extends Lanous {
         return !file_exists($this->project_directory."\\".$directory) ? mkdir($this->project_directory."\\".$directory) : true;
     }
     private function Copy($from,$to) {
-        return !file_exists($this->project_directory."\\".$to) ? copy($from,$this->project_directory."\\".$to) : true;
+        $readfile = file_get_contents($from);
+        $readfile = str_replace("namespace MyLanous","namespace ".$this->project_name,$readfile);
+        return !file_exists($this->project_directory."\\".$to) ? file_put_contents($this->project_directory."\\".$to,$readfile) : true;
     }
 }

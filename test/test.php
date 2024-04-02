@@ -10,7 +10,7 @@ class LanousConfig {
     const password = '';
     const database = "lanous";
     const dbsm = "mysql";
-    const project_name = "MyLanous";
+    const project_name = "Azad";
     const project_dir = __DIR__;
 }
 

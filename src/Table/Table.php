@@ -5,8 +5,8 @@ namespace Lanous\db\Table;
 class Table extends \Lanous\db\Lanous {
     private $dbsm,$table_name,$database;
     public function __construct($table_name,$dbsm,$database) {
-        if(!is_subclass_of($table_name,\Lanous\db\Structure\class_name))
-            throw new \Lanous\db\Exceptions\Structure(" ---- ");
+        if(!is_subclass_of($table_name,\Lanous\db\Structure\Table::class))
+            throw new \Lanous\db\Exceptions\Structure("The class “".$table_name."” has not been properly defined.");
         $this->dbsm = $dbsm;
         $this->table_name = $table_name;
         $this->database = $database;
