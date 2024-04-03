@@ -67,7 +67,6 @@ class Job {
     }
 
     private function RestoreData () {
-        // $this->datas[$table_name][$primary_value] = $Datas;
         foreach ($this->datas as $table_name => $primaries_keys) {
             foreach ($primaries_keys as $primary_value => $data) {
                 $primary_key = $this->primarys[$table_name];

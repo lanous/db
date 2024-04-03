@@ -14,7 +14,7 @@ class Select extends \Lanous\db\Lanous {
         $this->keywords = $keywords;
     }
 
-    public function Extract (Where $where=null) {
+    public function Extract (Where $where=null) : RowReturn {
         $class_explode = explode("\\",$this->table_name);
         $table_name = array_pop($class_explode);
         $query = $this->MakeQuery($this->dbsm)->Extract($table_name,$this->column_name,$this->keywords,$where);
@@ -26,7 +26,7 @@ class Select extends \Lanous\db\Lanous {
             });
             $data[$data_key] = (object) $data[$data_key];
         });
-        return new ReturnStrc($data);
+        return new RowReturn($data);
     }
 
 }

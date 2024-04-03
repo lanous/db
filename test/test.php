@@ -17,6 +17,39 @@ class LanousConfig {
 
 $database = new Database\Connect(new LanousConfig);
 
+$Table = $database->OpenTable (MyLanous\Table\Users::class);
+
+$Where = $Table->Where(MyLanous\Table\Users::ID,"=",1);
+
+$data = $Table->Select(
+    column: "*",
+    distinct: true
+)->Extract();
+
+# LastRow | FirstRow
+
+$data->LastRow($data::ArrayType)['first_name'];
+// mohammad
+
+$data->LastRow($data::Keys)[1];
+// first_name
+
+$data->LastRow($data::Methods)->first_name->test("foo","bar");
+// Hello mohammad p.a = foo and p.b = bar
+
+$data->LastRow($data::ObjectType)->first_name->value;
+// mohammad
+$data->LastRow($data::ObjectType)->first_name
+        ->methods->test("foo","bar");
+// Hello mohammad p.a = foo and p.b = bar
+
+$data->LastRow($data::Values)[1];
+// mohammad
+
+
+
+/*
+
 try {
 
     $Job = $database->NewJob();
@@ -45,7 +78,7 @@ try {
     }
 
 }
-
+*/
 
 
 /*
