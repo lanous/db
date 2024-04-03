@@ -13,7 +13,6 @@ class Connect extends Lanous {
     public function __construct(object $config) {
         try {
             $this->CheckConfig($config);
-
             $supported_dbsm = ['mysql'];
             $this->dbsm = $config::dbsm;
             if (!in_array($this->dbsm,$supported_dbsm))

@@ -52,10 +52,3 @@ trait ValuePreparation
         return $value;
     }
 }
-
-
-function test() {
-    echo "12";
-}
-
-test();
