@@ -96,3 +96,5 @@ class ArrayData implements \Lanous\db\Structure\DataType {
 ```
 
 The appearance and overall structure of the project make database management easy and pleasant in IDEs.
+
+[overview.mp4](https://github.com/lanous/db/assets/165524835/ac749447-06b9-441b-b675-92705fe9a4a4)
