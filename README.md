@@ -151,3 +151,31 @@ Furthermore, for configuring the DBMS, you can use library constants. This appro
     const dbsm = Database\Lanous::DBSM_Mysql; # Database\Lanous::DBSM_(X)
     ...
 ```
+
+After creating the configuration class, it’s time to establish a connection with the database.
+
+```php
+$database = new Database\Connect(new LanousConfig);
+```
+
+### Final code:
+
+```php
+<?php
+
+include("vendor/autoload.php");
+
+use Lanous\db as Database;
+
+class LanousConfig {
+    const hostname = '127.0.0.1';
+    const username = 'root';
+    const password = '';
+    const database = "lanous";
+    const dbsm = Database\Lanous::DBSM_Mysql;
+    const project_name = "MyLanous";
+    const project_dir = __DIR__;
+}
+
+$database = new Database\Connect(new LanousConfig);
+```
