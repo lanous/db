@@ -55,7 +55,13 @@ class Table extends \Lanous\db\Lanous {
         $class_ref = new \ReflectionClass($this->table_name);
         $table_name = $class_ref->getShortName();
         $stmt = $this->database->query("DESCRIBE ".$table_name);
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt2 = $this->database->query("SHOW CREATE TABLE `$table_name`");
+        $stmt2 = $stmt2->fetchAll(\PDO::FETCH_ASSOC)[0]["Create Table"];
+        preg_match('#\(`(.*?)`\)[[:space:]]REFERENCES[[:space:]]`(.*?)`[[:space:]]\(`(.*?)`\)#',$stmt2,$stmt2);
+        if(isset($stmt2[1]) and isset($stmt2[2]) and isset($stmt2[3]))
+            $stmt["reference"] = ["table_reference"=>$stmt2[2],"column_reference"=>$stmt2[3],"column_name"=>$stmt2[1]];
+        return $stmt;
     }
 
 

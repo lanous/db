@@ -40,7 +40,7 @@ class Select extends \Lanous\db\Lanous {
         });
         if (count($data) == 0)
             return false;
-        return new RowReturn($data);
+        return new RowReturn($data,$this->dbsm,$this->database);
     }
 
 }

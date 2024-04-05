@@ -53,6 +53,10 @@ class Structure extends \Exception {
      * Primary key is not set
      */
     const ERR_PKNOTST = 889;
+    /**
+     * Reference not found
+     */
+    const ERR_RFRNCNF = 888;
 
     public function __construct(int $code = 0, \Throwable $previous = null) {
         $constantNames = array_flip(array_filter((new \ReflectionClass(__CLASS__))->getConstants(),static fn($v) => is_scalar($v)));
