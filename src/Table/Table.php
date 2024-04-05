@@ -64,6 +64,28 @@ class Table extends \Lanous\db\Lanous {
         return $stmt;
     }
 
+    /**
+     * Quick search in data table
+     * @param $column_value The data value you are looking for.
+     * @param $column_name The column that has this data value, if you do not set a value, it will look for the primary key.
+     * @return mixed form of an array consisting of keys that correspond to the column name and their value is the same as the value of the columns, and if no data is found, the output will be false.
+     */
+    public function QuickFind($column_value,$column_name=null) : bool | array {
+        if ($column_name == null) {
+            $find_primary = new $this->table_name();
+            $find_primary = $find_primary->Result();
+            $find_primary = $find_primary[\Lanous\db\Structure\Table::Result["Settings"]];
+            $find_primary = $find_primary[\Lanous\db\Structure\Table::Setting["Primary"]] ?? false;
+            if ($find_primary == false)
+                throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_PKNOTST);
+            $where = $this->Where ($find_primary,"=",$column_value);
+        } else {
+            $where = $this->Where ($column_name,"=",$column_value);
+        }
+       $data = $this->Select("*")->Extract($where);
+       return $data == false ? false : $data->LastRow(RowReturn::ArrayType);
+    }
+
 
     /**
      * It does not have any special abilities on its own.

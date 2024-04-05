@@ -21,7 +21,8 @@ class Config extends \Exception {
         if(count($trace) > 0) {
             $this->message .= "\n-------------\n";
             array_map(function ($x) {
-                $this->message .= "|- Filename: ".$x["file"]." (l.n:".$x["line"].")\n";
+                if(isset($x['file']) && isset($x['line']))
+                    $this->message .= "|- Filename: ".$x["file"]." (l.n:".$x["line"].")\n";
             },$trace);
             $this->message .= "-------------\n";
         }

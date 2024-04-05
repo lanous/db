@@ -20,9 +20,10 @@ $database->Setting->Table(MyLanous\Table\Wallet::class)
     ->FOREIGN_KEY("user_id",MyLanous\Table\Users::class,"id");
 
 $WalletTable = $database->OpenTable (MyLanous\Table\Wallet::class);
+$UsersTable = $database->OpenTable (MyLanous\Table\Users::class);
 
 /*
-$Table->Insert()
+$UsersTable->Insert()
     ->Set(MyLanous\Table\Users::first_name,"Mohammad")
     ->Set(MyLanous\Table\Users::last_name,"azad")
     ->Set(MyLanous\Table\Users::address,["city"=>"karaj"])
@@ -39,10 +40,12 @@ $Table = $database->OpenTable (MyLanous\Table\Users::class);
 $User = $Table->Select(column: "*")->Extract(primary_value: 1);
 $Wallet = $User->Child (MyLanous\Table\Wallet::class); #Check L.N 19
 $UserData = $User->LastRow();
-echo "Hello ".$UserData['first_name']."! - Your dollar wallet: $".$Wallet['usd'];
+// echo "Hello ".$UserData['first_name']."! - Your dollar wallet: $".$Wallet['usd'];
 # Hello mohammad! - Your dollar wallet: $5000
 
-
+$UserData2 = $Table->QuickFind(2);
+// echo "Hello ".$UserData2["first_name"];
+# Hello mohammad
 
 # The first method
 $method_1 = $Table->Select(column: "*")->Extract(primary_value: 1);
@@ -50,8 +53,39 @@ $method_1 = $Table->Select(column: "*")->Extract(primary_value: 1);
 # The second method
 $Where = $Table->Where(MyLanous\Table\Users::ID,"=",1);
 $method_2 = $Table->Select(column: "*")->Extract($Where);
-
 $data = $method_2;
+
+$created_at1 = $method_2->LastRow();
+$created_at1 = $created_at1["created_at"];
+$callback_test = $method_2->Callback(function ($column,$value) {
+    if($column == "created_at") {
+        return $value;
+    }
+});
+$created_at2 = $callback_test->LastRow(\Lanous\db\Table\RowReturn::ObjectType);
+var_dump($created_at2->created_at->Date->MakeArray());
+
+/*
+array(7) {
+  ["id"]=>
+  int(1)
+  ["first_name"]=>
+  string(5) "Ahmad"
+  ["last_name"]=>
+  string(4) "azad"
+  ["password"]=>
+  string(0) ""
+  ["status"]=>
+  enum(MyLanous\Table\UsersStatus::Active)
+  ["address"]=>
+  array(1) {
+    ["city"]=>
+    string(5) "karaj"
+  }
+  ["created_at"]=>
+  int(1712324262)
+}
+*/
 
 if ($data == false)
     exit("no data found!");

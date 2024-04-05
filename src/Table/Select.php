@@ -15,6 +15,8 @@ class Select extends \Lanous\db\Lanous {
     }
 
     public function Extract (Where $where=null,$primary_value = null) : false | RowReturn {
+
+        // find user
         if ($where != null and $primary_value != null)
             throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_IFEINPR);
         if ($primary_value != null) {
@@ -27,20 +29,22 @@ class Select extends \Lanous\db\Lanous {
                 throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_PKNOTST);
             $where = $where->Where ($find_primary,"=",$primary_value);
         }
+
+        // Make Query and get result
         $class_ref = new \ReflectionClass($this->table_name);
         $table_name = $class_ref->getShortName();
         $query = $this->MakeQuery($this->dbsm)->Extract($table_name,$this->column_name,$this->keywords,$where);
         $stmt = $this->database->query($query);
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        array_walk($data,function ($values,$data_key) use (&$data) {
+
+        /*array_walk($data,function ($values,$data_key) use (&$data) {
             array_walk($values,function ($column_value,$column_name) use (&$data,$data_key) {
                 $data[$data_key][$column_name] = $this->ValuePreparation($this->table_name,$column_name,$column_value);
             });
-            $data[$data_key] = (object) $data[$data_key];
-        });
+        });*/
         if (count($data) == 0)
             return false;
-        return new RowReturn($data,$this->dbsm,$this->database);
+        return new RowReturn($data,$this->dbsm,$this->database,$this->table_name);
     }
 
 }
