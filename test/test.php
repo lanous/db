@@ -14,19 +14,39 @@ class LanousConfig {
     const project_dir = __DIR__;
 }
 
-
 $database = new Database\Connect(new LanousConfig);
 
 $Table = $database->OpenTable (MyLanous\Table\Users::class);
+
+/*
+$Table->Insert()
+    ->Key(MyLanous\Table\Users::first_name)->Value("Mohammad")
+    ->Key(MyLanous\Table\Users::last_name)->Value("azad")
+    ->Key(MyLanous\Table\Users::address)->Value(["city"=>"karaj"])
+    ->Key(MyLanous\Table\Users::status)->Value(MyLanous\Table\UsersStatus::Active)
+    ->Key(MyLanous\Table\Users::join_time)->Value(time())
+->Push();
+*/
 
 $Where = $Table->Where(MyLanous\Table\Users::ID,"=",1);
 
 $data = $Table->Select(
     column: "*",
     distinct: true
-)->Extract();
+)->Extract($Where);
 
+if ($data == false)
+    exit("no data found!");
 # LastRow | FirstRow
+
+$data->LastRow($data::ObjectType)->{MyLanous\Table\Users::join_time}->Date->format("Y-m-d H:i:s");
+# "2024-04-05 12:17:03"
+
+$data->LastRow($data::ObjectType)->{MyLanous\Table\Users::status}->value;
+# enum(MyLanous\Table\UsersStatus::Active)
+
+$data->LastRow($data::ObjectType)->{MyLanous\Table\Users::status}->value->toPersian();
+# فعال
 
 $data->LastRow($data::ArrayType)['first_name'];
 // mohammad

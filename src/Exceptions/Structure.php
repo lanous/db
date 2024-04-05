@@ -41,6 +41,10 @@ class Structure extends \Exception {
      * if this is a custom datatype, please structure it according to the documentation.
      */
     const ERR_DTYPEIC = 892;
+    /**
+     * The class you have specified is not an ENUM.
+     */
+    const ERR_NOTENUM = 891;
 
     public function __construct(int $code = 0, \Throwable $previous = null) {
         $constantNames = array_flip(array_filter((new \ReflectionClass(__CLASS__))->getConstants(),static fn($v) => is_scalar($v)));

@@ -2,6 +2,17 @@
 
 namespace MyLanous\Table;
 
+enum UsersStatus {
+    case Active;
+    case Disabled;
+    function toPersian() {
+        return match($this->name) {
+            "Active" => "فعال",
+            "Disabled" => "غیرفعال"
+        };
+    }
+}
+
 class Users extends \Lanous\db\Structure\Table {
 
     const ID = "id";
@@ -9,6 +20,8 @@ class Users extends \Lanous\db\Structure\Table {
     const last_name = "last_name";
     const password = "password";
     const address = "address";
+    const status = "status";
+    const join_time = "created_at";
 
     public function __construct() {
         # Column List
@@ -30,8 +43,16 @@ class Users extends \Lanous\db\Structure\Table {
             ->DataType(\MyLanous\DataTypes\Varchar::class)
             ->Size(255);
 
+        $this->AddColumn(self::status)
+            ->DataType(\MyLanous\DataTypes\Varchar::class)
+            ->Size(255)
+            ->Enum(UsersStatus::class);
+
         $this->AddColumn(self::address)
             ->DataType(\MyLanous\DataTypes\ArrayData::class);
+
+        $this->AddColumn(self::join_time)
+            ->DataType(\MyLanous\DataTypes\Timestamp::class);
             
         # ---------- Data Handling
         /*$this->Injection(self::first_name)

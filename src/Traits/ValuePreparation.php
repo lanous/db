@@ -14,13 +14,19 @@ trait ValuePreparation
      * @param mixed $value The data we intend to extract or inject.
      * @param string $method Is this data used for <b>self::Preparationinjection</b> or <b>self::PreparationExtract</b>?
      */
-    public function ValuePreparation(string $table_class,string $column_name,mixed $value,$method=self::PreparationExtract) {
+    private function ValuePreparation(string $table_class,string $column_name,mixed $value,$method=self::PreparationExtract) {
         $table = new $table_class();
         $table = $table->Result();
         $DataHandling = $table[\Lanous\db\Structure\Table::Result['DataHandling']];
-        $DataType = new $table[\Lanous\db\Structure\Table::Result['Columns']][$column_name]["type"]($value);
+        $ColumnData = $table[\Lanous\db\Structure\Table::Result['Columns']][$column_name];
+        $Enum = $ColumnData[\Lanous\db\Structure\Table::Column["ENUM"]] ?? false;
+        $DataType = new $ColumnData["type"]($value);
+        
 
         if ($method == self::PreparationExtract) {
+            if ($Enum != false) {
+                $value = $Enum::{$value};
+            }
             if (isset($DataHandling["Extract"][$column_name])) {
                 if(isset($DataHandling["Extract"][$column_name][\Lanous\db\Structure\Table::DataHandling["Evaluation"]])) {
                     $DataHandling["Extract"][$column_name][\Lanous\db\Structure\Table::DataHandling["Evaluation"]]($value);
@@ -30,11 +36,22 @@ trait ValuePreparation
                 }
             }
             $result = [];
+            $FindProperties = new \ReflectionClass($DataType);
+            $FindProperties = array_column($FindProperties->getProperties(\ReflectionProperty::IS_PUBLIC),"name");
+            array_map(function ($property) use (&$result,$DataType) {
+                $result[$property] = $DataType->{$property};
+            },$FindProperties);
             $result["methods"] = $DataType;
             $result["value"] = $DataType->Extraction($value);
             $value = (object) $result;
         }
         if ($method == self::Preparationinjection) {
+            if ($Enum != false) {
+                $is_enum = new \ReflectionClass($value);
+                if($is_enum->isEnum() != true)
+                    throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_NOTENUM);
+                $value = $value->name;
+            }
             if(!$DataType->Validation($value)) {
                 throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_VLDDTYP);
             }

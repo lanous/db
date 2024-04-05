@@ -3,7 +3,7 @@
 namespace Lanous\db\Structure;
 
 class Table {
-    const Column = ["DataType" => "type", "DataSize" => "size", "AutoIncrement" => "auto_increment"];
+    const Column = ["DataType" => "type", "DataSize" => "size", "AutoIncrement" => "auto_increment","ENUM" => "enum"];
     const Setting = ["Primary" => "primary","DataSize" => "size","AutoIncrement" => "auto_increment"];
     const DataHandling = ["Evaluation" => "evaluation","Edit" => "edit"];
     const Result = ["Columns" => "columns","DataHandling" => "data_handling","Settings" => "settings"];
@@ -59,37 +59,34 @@ class Column {
     public function __construct($name) {
         $this->name = $name;
     }
-
-
     public function DataType($object) {
         if (!class_exists($object))
             throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_CLASSNF);
         $this->CheckDataTypes ($object);
-
         Table::$Column[$this->name][Table::Column["DataType"]] = $object;
         return $this;
     }
-
-
     public function Size($size) {
         Table::$Column[$this->name][Table::Column["DataSize"]] = $size;
         return $this;
     }
-
-
     public function AutoIncrement(bool $value) {
         Table::$Column[$this->name][Table::Column["AutoIncrement"]] = $value;
         return $this;
     }
-
-
     public function Primary() {
         if (isset(Table::$Setting[Table::Setting["Primary"]]))
             throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_MPLEPKY);
         Table::$Setting[Table::Setting["Primary"]] = $this->name;
         return $this;
     }
-
+    public function Enum($class) {
+        $is_enum = new \ReflectionClass($class);
+        if($is_enum->isEnum() != true)
+            throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_NOTENUM);
+        Table::$Column[$this->name][Table::Column["ENUM"]] = $class;
+        return $this;
+    }
 
 
     private function CheckDataTypes ($object) {
