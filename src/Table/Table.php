@@ -52,8 +52,8 @@ class Table extends \Lanous\db\Lanous {
      * Output of table information including columns and information of each column
      */
     public function Describe () : array {
-        $class_explode = explode("\\",$this->table_name);
-        $table_name = array_pop($class_explode);
+        $class_ref = new \ReflectionClass($this->table_name);
+        $table_name = $class_ref->getShortName();
         $stmt = $this->database->query("DESCRIBE ".$table_name);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }

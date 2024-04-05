@@ -16,8 +16,17 @@ class LanousConfig {
 
 $database = new Database\Connect(new LanousConfig);
 
-$Table = $database->OpenTable (MyLanous\Table\Users::class);
+$database->Setting->Table(MyLanous\Table\Wallet::class)
+    ->FOREIGN_KEY("user_id",MyLanous\Table\Users::class,"id");
 
+$WalletTable = $database->OpenTable (MyLanous\Table\Wallet::class);
+$WalletTable->Insert()
+    ->Set("user_id",1)
+    ->Set("usd",5000)
+->Push();
+
+
+$Table = $database->OpenTable (MyLanous\Table\Users::class);
 /*
 $Table->Insert()
     ->Set(MyLanous\Table\Users::first_name,"Mohammad")
