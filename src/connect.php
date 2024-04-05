@@ -5,6 +5,7 @@ namespace Lanous\db;
 class Connect extends Lanous {
 
     private $project_name,$project_directory,$dbsm,$database;
+    public $Setting;
 
     /**
      * Establishing a connection with the database
@@ -29,17 +30,11 @@ class Connect extends Lanous {
             $this->database = new \PDO("mysql:host=$host;dbname=".$db_name, $username, $password);
             $this->database->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             $this->MakeTables ();
+            $this->Setting = new Settings\Settings($this->database,$this->dbsm);
         } catch(\PDOException $e) {
             throw new Exceptions\init(Exceptions\init::ERR_CNCTERR);
         }
     }
-
-    /**
-     * Open the database settings
-     */
-    /*public function Settings () {
-        return new Settings\Settings($this->database);
-    }*/
 
     /**
      * It opens a table to perform core operations such as <code>Select</code>, <code>Update</code>, <code>Insert</code>, <code>Delete</code>, and <code>Describe</code>.
@@ -49,7 +44,7 @@ class Connect extends Lanous {
         return new Table\Table($table_name,$this->dbsm,$this->database);
     }
     /**
-     * Loading a plugin
+     * Load a plugin from the <code>project\Plugins directory</code>
      * @param string $plugin_class Plugin class name
      * @param mixed $data If you want to send specific data to the plugin, set it in this parameter.
      */
@@ -132,15 +127,12 @@ class Connect extends Lanous {
         // and ensure that the table structure adheres to the defined rules and principles.
         $Tables = array_values(array_filter(get_declared_classes(),fn ($data) => is_subclass_of($data,\Lanous\db\Structure\Table::class)));
         array_map(function ($class_name) {
-            $class_explode = explode("\\",$class_name);
-            // Ensure that the namespace matches the project name.
-            if ($class_explode[0] != $this->project_name)
+            $class_ref = new \ReflectionClass($class_name);
+            $table_name = $class_ref->getShortName();
+            $name_spcae = $class_ref->getNamespaceName();
+            $name_spcae = explode("\\",$name_spcae);
+            if ($name_spcae[0] != $this->project_name)
                 throw new Exceptions\Structure(Exceptions\Structure::ERR_NMESPCE);
-            // The name of the data table that is sent to the Query
-            $table_name = array_pop($class_explode);
-            // The list of database tables is taken with the tables method
-            // and if this table has not been created, a request to create it is sent.
-            // This is better than when we settle for (CREATE TABLE IF NOT EXISTS).
             if (!in_array(strtolower($table_name),$this->GetTables())){
                 $data = new $class_name();
                 $MakeQuery = $this->MakeQuery($this->dbsm)->MakeTable($table_name, $data->Result());

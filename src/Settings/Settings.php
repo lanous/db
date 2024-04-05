@@ -3,16 +3,13 @@
 namespace Lanous\db\Settings;
 
 class Settings {
-    /**
-     * Database settings
-     */
-    public $DataBase;
-    /**
-     * Table settings
-     */
-    public $Table;
-    public function __construct($database) {
-        $this->DataBase = new Database($database);
-        $this->Table = new Table($database);
+    private $database;
+    private $dbsm;
+    public function __construct($database,$dbsm) {
+        $this->database = $database;
+        $this->dbsm = $dbsm;
+    }
+    public function Table($table_class) {
+        return new Table($this->database,$this->dbsm,$table_class);
     }
 }

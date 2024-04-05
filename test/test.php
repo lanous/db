@@ -16,7 +16,10 @@ class LanousConfig {
 
 $database = new Database\Connect(new LanousConfig);
 
-$Table = $database->OpenTable (MyLanous\Table\Users::class);
+$database->Setting->Table(MyLanous\Table\Wallet::class)
+    ->FOREIGN_KEY("user_id",MyLanous\Table\Users::class,"id");
+
+$WalletTable = $database->OpenTable (MyLanous\Table\Wallet::class);
 
 /*
 $Table->Insert()
@@ -25,7 +28,21 @@ $Table->Insert()
     ->Set(MyLanous\Table\Users::address,["city"=>"karaj"])
     ->Set(MyLanous\Table\Users::status,MyLanous\Table\UsersStatus::Active)
 ->Push();
+
+$WalletTable->Insert()
+    ->Set("user_id",1)
+    ->Set("usd",5000)
+->Push();
 */
+
+$Table = $database->OpenTable (MyLanous\Table\Users::class);
+$User = $Table->Select(column: "*")->Extract(primary_value: 1);
+$Wallet = $User->Child (MyLanous\Table\Wallet::class); #Check L.N 19
+$UserData = $User->LastRow();
+echo "Hello ".$UserData['first_name']."! - Your dollar wallet: $".$Wallet['usd'];
+# Hello mohammad! - Your dollar wallet: $5000
+
+
 
 # The first method
 $method_1 = $Table->Select(column: "*")->Extract(primary_value: 1);
@@ -40,7 +57,7 @@ if ($data == false)
     exit("no data found!");
 # LastRow | FirstRow
 
-echo $data->LastRow()["first_name"];
+$data->LastRow()["first_name"];
 # mohammad
 
 $data->LastRow($data::ObjectType)->{MyLanous\Table\Users::join_time}->Date->format("Y-m-d H:i:s");

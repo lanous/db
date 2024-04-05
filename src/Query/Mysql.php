@@ -112,5 +112,14 @@ class Mysql implements Face {
         }
         return $query;
     }
+    public function Alter(string $table_name, array $data): string {
+        if($data['operation'] == "foreign_key") {
+            $query = "ALTER TABLE ".$table_name;
+            $query .= " ADD FOREIGN KEY (".$data['column_name'].")";
+            $query .= " REFERENCES ".$data['reference_table']."(".$data['reference_column'].")";
+            return $query;
+        }
+        return 1;
+    }
 
 }

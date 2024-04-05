@@ -18,7 +18,7 @@ trait ValuePreparation
         $table = new $table_class();
         $table = $table->Result();
         $DataHandling = $table[\Lanous\db\Structure\Table::Result['DataHandling']];
-        $ColumnData = $table[\Lanous\db\Structure\Table::Result['Columns']][$column_name];
+        $ColumnData = $table[\Lanous\db\Structure\Table::Result['Columns']][$column_name] ?? throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_CLUMNND);
         $Enum = $ColumnData[\Lanous\db\Structure\Table::Column["ENUM"]] ?? false;
         $DataType = new $ColumnData["type"]($value);
         

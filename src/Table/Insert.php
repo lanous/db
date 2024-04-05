@@ -29,10 +29,9 @@ class Insert extends \Lanous\db\Lanous {
      * submit to create a new row
      */
     public function Push() : bool {
-        $class_explode = explode("\\",$this->table_name);
-        $table_name = array_pop($class_explode);
+        $class_ref = new \ReflectionClass($this->table_name);
+        $table_name = $class_ref->getShortName();
         $query = $this->MakeQuery($this->dbsm)->Insert($table_name, $this->data);
-        echo $query;
         return $this->database->exec($query);
     }
 

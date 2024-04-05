@@ -2,6 +2,19 @@
 
 namespace Lanous\db\Table;
 
+
+/*
+    ["reference"]=>
+    array(3) {
+        ["table_reference"]=>
+        string(5) "users"
+        ["column_reference"]=>
+        string(2) "id"
+        ["column_name"]=>
+        string(7) "user_id"
+    }
+*/
+
 class RowReturn {
     /**
      * Display only values, column names are indexed from 0.
@@ -31,8 +44,11 @@ class RowReturn {
      */
     const ObjectType = 5;
     public $Rows;
-    public function __construct ($rows){
+    private $dbsm,$database;
+    public function __construct ($rows,$dbsm,$database){
         $this->Rows = $rows;
+        $this->dbsm = $dbsm;
+        $this->database = $database;
     }
 
 
@@ -50,6 +66,16 @@ class RowReturn {
         $Rows = $this->Rows;
         $data = array_pop($Rows);
         return $this->MODES($data,$mode);
+    }
+    public function Child ($table_class,$mode=self::ArrayType) {
+        $Table = new Table($table_class,$this->dbsm,$this->database);
+        $reference = $Table->Describe()["reference"] ?? throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_RFRNCNF);
+        $column_reference = $reference['column_reference'];
+        $column_name = $reference['column_name'];
+        $LastRowResult = $this->LastRow (self::ArrayType);
+        $value_reference_column = $LastRowResult[$column_reference];
+        $Where = $Table->Where($column_name,"=",$value_reference_column);
+        return $Table->Select("*")->Extract($Where)->LastRow($mode);
     }
 
     private function MODES ($data,$mode) {

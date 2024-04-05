@@ -27,8 +27,8 @@ class Select extends \Lanous\db\Lanous {
                 throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_PKNOTST);
             $where = $where->Where ($find_primary,"=",$primary_value);
         }
-        $class_explode = explode("\\",$this->table_name);
-        $table_name = array_pop($class_explode);
+        $class_ref = new \ReflectionClass($this->table_name);
+        $table_name = $class_ref->getShortName();
         $query = $this->MakeQuery($this->dbsm)->Extract($table_name,$this->column_name,$this->keywords,$where);
         $stmt = $this->database->query($query);
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -40,7 +40,7 @@ class Select extends \Lanous\db\Lanous {
         });
         if (count($data) == 0)
             return false;
-        return new RowReturn($data);
+        return new RowReturn($data,$this->dbsm,$this->database);
     }
 
 }
