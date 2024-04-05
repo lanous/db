@@ -42,7 +42,9 @@ $UserData = $User->LastRow();
 echo "Hello ".$UserData['first_name']."! - Your dollar wallet: $".$Wallet['usd'];
 # Hello mohammad! - Your dollar wallet: $5000
 
-
+$UserData2 = $Table->QuickFind(2);
+echo "Hello ".$UserData2["first_name"];
+# Hello mohammad
 
 # The first method
 $method_1 = $Table->Select(column: "*")->Extract(primary_value: 1);
