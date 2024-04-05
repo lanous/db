@@ -38,7 +38,7 @@ As you can see, everything is in an object-oriented manner. In fact, your data t
             ->DataType(\MyLanous\DataTypes\Integer::class)
             ->Size(255)
             ->AutoIncrement(true)
-            ->Primary();
+            ->Constraints(Primary: true);
 
         $this->AddColumn("first_name")
             ->DataType(\MyLanous\DataTypes\Varchar::class)
@@ -94,7 +94,16 @@ class ArrayData implements \Lanous\db\Structure\DataType {
     # Stay tuned for more documentation!
 }
 ```
-
-The appearance and overall structure of the project make database management easy and pleasant in IDEs.
-
-[overview.mp4](https://github.com/lanous/db/assets/165524835/ac749447-06b9-441b-b675-92705fe9a4a4)
+# Idioms
+## Database
+a storage location for a collection of data that is accessible and editable.
+## Database management system (D B S M)
+A software that uses a set of tools for managing database data, responsible for communication and interaction with the database.
+## Tables
+Data is stored systematically and categorized. Each table holds a group of related data. For example, the ‘user information’ table stores users’ identity information such as name, surname, and birthdate. This helps ensure that data is appropriately placed.
+## Columns
+Columns essentially define what the data is related to. Columns are members of tables and hold the data within them. For example, the “last name” column places users’ last names within it. Each column has specific settings, including data type, data size, constraints, and other properties.
+### Primary
+When a column is designated as the primary key, it acts like a unique fingerprint for data rows and prevents duplicate values in that column. Once a column is identified as the primary key, data can be edited using this primary key. Typically, this column is named "id" and throughout the program, this ID is used to identify users.
+### Foreign Key
+Referencing a column to the primary key of another table creates data consistency and establishes a relationship between them.
