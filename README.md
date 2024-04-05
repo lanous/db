@@ -107,3 +107,47 @@ Columns essentially define what the data is related to. Columns are members of t
 When a column is designated as the primary key, it acts like a unique fingerprint for data rows and prevents duplicate values in that column. Once a column is identified as the primary key, data can be edited using this primary key. Typically, this column is named "id" and throughout the program, this ID is used to identify users.
 ### Foreign Key
 Referencing a column to the primary key of another table creates data consistency and establishes a relationship between them.
+
+# Setting up
+## Project installation
+Install the lanous\db package using composer.
+
+```shell
+composer require lanous\db
+```
+
+After completing the installation, include autoload.php in the main project file (which can be index.php).
+
+```php
+<?php
+
+include("vendor/autoload.php");
+
+        ...
+
+?>
+```
+After the project is loaded successfully, you need to connect to the database through the connect class of the project. Before connecting, it is necessary to create a config class.
+Your config class should include these constants: ``hostname``, ``username``, ``password``, ``database`` - ``dbsm``, ``project_name``, ``project_dir``
+
+An example of a config class:
+
+```php
+class LanousConfig {
+    const hostname = '127.0.0.1';
+    const username = 'root';
+    const password = '';
+    const database = "lanous";
+    const dbsm = "mysql";
+    const project_name = "MyLanous";
+    const project_dir = __DIR__;
+}
+```
+
+Furthermore, for configuring the DBMS, you can use library constants. This approach helps prevent typing errors and also informs you about the supported DBMS options (with PHPDoc)
+
+```php
+    ...
+    const dbsm = Database\Lanous::DBSM_Mysql; # Database\Lanous::DBSM_(X)
+    ...
+```
