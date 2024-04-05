@@ -45,6 +45,14 @@ class Structure extends \Exception {
      * The class you have specified is not an ENUM.
      */
     const ERR_NOTENUM = 891;
+    /**
+     * Interference in parameters
+     */
+    const ERR_IFEINPR = 890;
+    /**
+     * Primary key is not set
+     */
+    const ERR_PKNOTST = 889;
 
     public function __construct(int $code = 0, \Throwable $previous = null) {
         $constantNames = array_flip(array_filter((new \ReflectionClass(__CLASS__))->getConstants(),static fn($v) => is_scalar($v)));

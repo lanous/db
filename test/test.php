@@ -20,24 +20,28 @@ $Table = $database->OpenTable (MyLanous\Table\Users::class);
 
 /*
 $Table->Insert()
-    ->Key(MyLanous\Table\Users::first_name)->Value("Mohammad")
-    ->Key(MyLanous\Table\Users::last_name)->Value("azad")
-    ->Key(MyLanous\Table\Users::address)->Value(["city"=>"karaj"])
-    ->Key(MyLanous\Table\Users::status)->Value(MyLanous\Table\UsersStatus::Active)
-    ->Key(MyLanous\Table\Users::join_time)->Value(time())
+    ->Set(MyLanous\Table\Users::first_name,"Mohammad")
+    ->Set(MyLanous\Table\Users::last_name,"azad")
+    ->Set(MyLanous\Table\Users::address,["city"=>"karaj"])
+    ->Set(MyLanous\Table\Users::status,MyLanous\Table\UsersStatus::Active)
 ->Push();
 */
 
-$Where = $Table->Where(MyLanous\Table\Users::ID,"=",1);
+# The first method
+$method_1 = $Table->Select(column: "*")->Extract(primary_value: 1);
 
-$data = $Table->Select(
-    column: "*",
-    distinct: true
-)->Extract($Where);
+# The second method
+$Where = $Table->Where(MyLanous\Table\Users::ID,"=",1);
+$method_2 = $Table->Select(column: "*")->Extract($Where);
+
+$data = $method_2;
 
 if ($data == false)
     exit("no data found!");
 # LastRow | FirstRow
+
+echo $data->LastRow()["first_name"];
+# mohammad
 
 $data->LastRow($data::ObjectType)->{MyLanous\Table\Users::join_time}->Date->format("Y-m-d H:i:s");
 # "2024-04-05 12:17:03"

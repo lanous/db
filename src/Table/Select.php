@@ -14,7 +14,19 @@ class Select extends \Lanous\db\Lanous {
         $this->keywords = $keywords;
     }
 
-    public function Extract (Where $where=null) : false | RowReturn {
+    public function Extract (Where $where=null,$primary_value = null) : false | RowReturn {
+        if ($where != null and $primary_value != null)
+            throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_IFEINPR);
+        if ($primary_value != null) {
+            $where = new \Lanous\db\Table\Table($this->table_name,$this->dbsm,$this->database);
+            $find_primary = new $this->table_name();
+            $find_primary = $find_primary->Result();
+            $find_primary = $find_primary[\Lanous\db\Structure\Table::Result["Settings"]];
+            $find_primary = $find_primary[\Lanous\db\Structure\Table::Setting["Primary"]] ?? false;
+            if ($find_primary == false)
+                throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_PKNOTST);
+            $where = $where->Where ($find_primary,"=",$primary_value);
+        }
         $class_explode = explode("\\",$this->table_name);
         $table_name = array_pop($class_explode);
         $query = $this->MakeQuery($this->dbsm)->Extract($table_name,$this->column_name,$this->keywords,$where);
