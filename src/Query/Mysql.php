@@ -20,9 +20,20 @@ class Mysql implements Face {
             $QueryType = $DataType::Query;
             $DataSize = $column_data[\Lanous\db\Structure\Table::Column["DataSize"]] ?? false;
             $AutoIncrement = $column_data[\Lanous\db\Structure\Table::Column["AutoIncrement"]] ?? false;
+            $NotNull = $column_data[\Lanous\db\Structure\Table::Column["NotNull"]] ?? false;
+            $UNIQUE = $column_data[\Lanous\db\Structure\Table::Column["UNIQUE"]] ?? false;
+            $Default = $column_data[\Lanous\db\Structure\Table::Column["Default"]] ?? false;
+
             $this->query .= "`$column_name` $QueryType";
             $this->query .= $DataSize != false ? "($DataSize)" : " ";
-            $this->query .= ($AutoIncrement == false) ? "" : "NOT NULL AUTO_INCREMENT ";
+            $this->query .= ($AutoIncrement == false) ? "" : " NOT NULL AUTO_INCREMENT ";
+            $this->query .= ($AutoIncrement == false && $NotNull == true) ? " NOT NULL " : "";
+            $this->query .= ($UNIQUE == true) ? " NOT NULL " : "";
+            if ($Default != false) {
+                $is_function = $Default[-1] == ")" and $Default[-2] == "("; //example: CURRENT_DATE()
+                $Default = $is_function == true ? $Default : "'".$Default."'";
+                $this->query .= " DEFAULT ".$Default." ";
+            }
             $this->query .= ",";
         });
         $this->query = rtrim($this->query," ,");

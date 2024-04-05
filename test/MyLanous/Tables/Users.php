@@ -29,19 +29,23 @@ class Users extends \Lanous\db\Structure\Table {
             ->DataType(\MyLanous\DataTypes\Integer::class)
             ->Size(255)
             ->AutoIncrement(true)
-            ->Primary();
+            ->Constraints(Primary: true);
 
         $this->AddColumn(self::first_name)
             ->DataType(\MyLanous\DataTypes\Varchar::class)
-            ->Size(255);
+            ->Size(255)
+            ->Constraints(not_null: true);
 
         $this->AddColumn(self::last_name)
             ->DataType(\MyLanous\DataTypes\Varchar::class)
-            ->Size(255);
-
+            ->Size(255)
+            ->Constraints(not_null: true);
+            
         $this->AddColumn(self::password)
             ->DataType(\MyLanous\DataTypes\Varchar::class)
-            ->Size(255);
+            ->Size(255)
+            ->Constraints(not_null: true);
+
 
         $this->AddColumn(self::status)
             ->DataType(\MyLanous\DataTypes\Varchar::class)
@@ -52,7 +56,8 @@ class Users extends \Lanous\db\Structure\Table {
             ->DataType(\MyLanous\DataTypes\ArrayData::class);
 
         $this->AddColumn(self::join_time)
-            ->DataType(\MyLanous\DataTypes\Timestamp::class);
+            ->DataType(\MyLanous\DataTypes\Timestamp::class)
+            ->Constraints(default: "NOW()");
             
         # ---------- Data Handling
         /*$this->Injection(self::first_name)

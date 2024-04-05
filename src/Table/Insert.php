@@ -17,27 +17,14 @@ class Insert extends \Lanous\db\Lanous {
         $this->columns_list = array_keys($columns);
     }
     /**
-     * The name of the data table column to which you want to assign a value.
+     * Setting the column name and its value
      */
-    public function Key(string $column_name) : Insert {
-        if ($this->column_name != null)
-            throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_INSTPTN);
-        if (!in_array($column_name,$this->columns_list))
-            throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_CLUMNND);
-        $this->column_name = $column_name;
-        $this->data[$this->column_name] = "";
+    public function Set (string $column_name,mixed $value) : Insert {
+        $value = $this->ValuePreparation($this->table_name,$column_name,$value,'send');
+        $this->data[$column_name] = $value;
         return $this;
     }
-    /**
-     * The value you want to assign to this column
-     */
-    public function Value(mixed $value) : Insert {
-        if ($this->column_name == null)
-            throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_INSTPTN);
-        $this->data[$this->column_name] = $this->ValuePreparation($this->table_name,$this->column_name,$value,'send');
-        $this->column_name = null;
-        return $this;
-    }
+
     /**
      * submit to create a new row
      */
@@ -45,7 +32,7 @@ class Insert extends \Lanous\db\Lanous {
         $class_explode = explode("\\",$this->table_name);
         $table_name = array_pop($class_explode);
         $query = $this->MakeQuery($this->dbsm)->Insert($table_name, $this->data);
-        echo $query.PHP_EOL;
+        echo $query;
         return $this->database->exec($query);
     }
 

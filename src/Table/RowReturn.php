@@ -46,7 +46,7 @@ class RowReturn {
     /**
      * Display the newest row added to the data table
      */
-    public function LastRow (int $mode=self::ObjectType) {
+    public function LastRow (int $mode=self::ArrayType) {
         $Rows = $this->Rows;
         $data = array_pop($Rows);
         return $this->MODES($data,$mode);

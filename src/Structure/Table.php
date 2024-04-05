@@ -3,7 +3,16 @@
 namespace Lanous\db\Structure;
 
 class Table {
-    const Column = ["DataType" => "type", "DataSize" => "size", "AutoIncrement" => "auto_increment","ENUM" => "enum"];
+    const Column = [
+        "DataType" => "type",
+        "DataSize" => "size",
+        "AutoIncrement" => "auto_increment",
+        "ENUM" => "enum",
+        "NotNull" => "not_null",
+        "UNIQUE" => "unique",
+        "Default" => "default",
+        "Check" => "check"
+    ];
     const Setting = ["Primary" => "primary","DataSize" => "size","AutoIncrement" => "auto_increment"];
     const DataHandling = ["Evaluation" => "evaluation","Edit" => "edit"];
     const Result = ["Columns" => "columns","DataHandling" => "data_handling","Settings" => "settings"];
@@ -74,11 +83,21 @@ class Column {
         Table::$Column[$this->name][Table::Column["AutoIncrement"]] = $value;
         return $this;
     }
-    public function Primary() {
-        if (isset(Table::$Setting[Table::Setting["Primary"]]))
-            throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_MPLEPKY);
-        Table::$Setting[Table::Setting["Primary"]] = $this->name;
-        return $this;
+    public function Constraints(bool $Primary=false,bool $not_null=false,bool $UNIQUE=false,$default=false,$check=false) : bool {
+        if($Primary == true) {
+            if (isset(Table::$Setting[Table::Setting["Primary"]]))
+                throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_MPLEPKY);
+            Table::$Setting[Table::Setting["Primary"]] = $this->name;
+        }
+        if($not_null == true)
+            Table::$Column[$this->name][Table::Column["NotNull"]] = true;
+        if($UNIQUE == true)
+            Table::$Column[$this->name][Table::Column["UNIQUE"]] = true;
+        if($default != false)
+            Table::$Column[$this->name][Table::Column["Default"]] = $default;
+        if($check != false)
+            Table::$Column[$this->name][Table::Column["Check"]] = $default;
+        return true;
     }
     public function Enum($class) {
         $is_enum = new \ReflectionClass($class);
