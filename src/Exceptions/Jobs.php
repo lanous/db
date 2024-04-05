@@ -36,7 +36,8 @@ class Jobs extends \Exception {
         $trace = $this->getTrace();
         $this->message .= "\n-------------\n";
         array_map(function ($x) {
-            $this->message .= "|- Filename: ".$x["file"]." (l.n:".$x["line"].")\n";
+            if(isset($x['file']) && isset($x['line']))
+                    $this->message .= "|- Filename: ".$x["file"]." (l.n:".$x["line"].")\n";
         },$trace);
         $this->message .= "-------------\n";
         

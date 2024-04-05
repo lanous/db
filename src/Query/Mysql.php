@@ -46,22 +46,27 @@ class Mysql implements Face {
     public function Insert(string $table_name, array $data): string {
         $column_name = array_keys($data);
         $column_value = array_values($data);
-        return "INSERT INTO `".$table_name."`(".implode(",",$column_name).") VALUES (".implode(",",$column_value).")";
+        array_walk($column_value,function (&$value,$key){
+            $value = "'".$value."'";
+        });
+        $query = "INSERT INTO `".$table_name."`(".implode(",",$column_name).") VALUES (".implode(",",$column_value).")";
+        return $query;
     }
     public function Update(string $table_name, array $new_values, object $where=null) : string {
         $query = "UPDATE `".$table_name."` SET ";
-        array_walk($new_values,function ($column_name,$new_value) use (&$query) {
-            $query .= "$new_value = $column_name,";
+        array_walk($new_values,function ($new_value,$column_name) use (&$query) {
+            $new_value = "'".$new_value."'";
+            $query .= "$column_name = $new_value,";
         });
         $query = rtrim($query,",");
         if(isset($where)) {
             array_map(function ($data) use (&$query) {
                 if ($data["condition"] == "main")
-                    $query .= " WHERE ".$data["column_name"]." ".$data["operator"]." ".$data["value"].",";
+                    $query .= " WHERE ".$data["column_name"]." ".$data["operator"]." '".$data["value"]."',";
                 if ($data["condition"] == "and")
-                    $query .= " AND ".$data["column_name"]." ".$data["operator"]." ".$data["value"].",";
+                    $query .= " AND ".$data["column_name"]." ".$data["operator"]." '".$data["value"]."',";
                 if ($data["condition"] == "or")
-                    $query .= " OR ".$data["column_name"]." ".$data["operator"]." ".$data["value"].",";
+                    $query .= " OR ".$data["column_name"]." ".$data["operator"]." '".$data["value"]."',";
             },$where->where);
             $query = rtrim($query,",");
         }

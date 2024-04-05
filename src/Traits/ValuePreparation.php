@@ -35,15 +35,7 @@ trait ValuePreparation
                     $value = $DataHandling["Extract"][$column_name][\Lanous\db\Structure\Table::DataHandling["Edit"]]($value);
                 }
             }
-            $result = [];
-            $FindProperties = new \ReflectionClass($DataType);
-            $FindProperties = array_column($FindProperties->getProperties(\ReflectionProperty::IS_PUBLIC),"name");
-            array_map(function ($property) use (&$result,$DataType) {
-                $result[$property] = $DataType->{$property};
-            },$FindProperties);
-            $result["methods"] = $DataType;
-            $result["value"] = $DataType->Extraction($value);
-            $value = (object) $result;
+            $value = $DataType->Extraction($value);
         }
         if ($method == self::Preparationinjection) {
             if ($Enum != false) {
@@ -65,7 +57,7 @@ trait ValuePreparation
             }
             $value = $DataType->Injection($value);
         }
-        $value = !is_array($value) ? ($method == "send" ? "'$value'" : $value) : $value;
+        //$value = !is_array($value) ? ($method == "send" ? "'$value'" : $value) : $value;
         return $value;
     }
 }
