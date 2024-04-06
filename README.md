@@ -744,3 +744,161 @@ $Table->Insert()
 ```
 > [!CAUTION]
 > PHP Fatal error:  Uncaught Lanous\db\Exceptions\Structure: The column you intend to work on is undefined and unknown in the data table class. [$e::ERR_CLUMNND]
+
+# utility methods
+One of the advantages of using the Lanous project is the existence of useful methods. These methods are separate from the main project topic but contribute to project improvement and enhance the clarity of your code.
+
+In the following section, we will introduce these useful functions:
+
+## Jobs
+This method is used for data storage and recovery in case of errors. When editing user information, if an error occurs during any of the processes, the data will revert to their previous state. For example, imagine you are exchanging a financial unit between two users. Let’s say you want to transfer $5000 between two users. Subtract $5000 from the first user’s account and add $5000 to the second user’s wallet. If, after deducting from the first user’s account, the process of adding to the second user’s wallet encounters an error, the first user loses their balance, and the second user does not receive the funds. What is the solution to this problem?
+
+```php
+Connect -> function NewJob () : Jobs\Job
+```
+
+### Example of Financial Transfer Between Two Users (with Full Details)
+```php
+try {
+
+    $Job = $database->NewJob();
+    $Job->Sensitivity(level: 3);
+
+    $Wallet1 = $Job->Get(MyLanous\Tables\Wallet::class,1);
+    $USD1 = $Wallet1->data['usd']->value;
+    $Wallet2 = $Job->Get(MyLanous\Tables\Wallet::class,2);
+    $USD2 = $Wallet2->data['usd']->value;
+
+    if ($USD2 < 5000)
+        throw new \Exception("The balance of the first user is insufficient for the transfer",100);
+
+    $Job->Edit($Wallet1,"usd",$USD1 + 5000);
+    $Job->Edit($Wallet2,"usd",$USD2 - 5000);
+    
+} catch (\Lanous\db\Exceptions\Jobs $error) {
+
+    if ($error->getCode() == $error::ERR_RECOVERY) {
+        // -- Be sure to specify this case in the catch --
+        // If the error code is ERR_RECOVERY, it means that the data recovery has encountered an error
+        // and it is better to check the operation manually.
+    } elseif ($error->getCode() == $error::ERR_NOCHANGE) {
+        // No changes were made to one of the rows
+    } elseif ($error->getCode() == $error::ERR_EXPERROR) {
+        // An error occurred while applying the changes.
+    } elseif ($error->getCode() == $error::ERR_CANTFIND) {
+        // One of the data was not found in the get method.
+    } elseif ($error->getCode() == $error::ERR_DUPLICTE) {
+        // When the repeated get method is written, you will encounter this error.
+    }
+
+} catch (\Exception $e) {
+    if ($e->getCode() == 100) {
+        echo ("Your inventory is insufficient.");
+    }
+}
+```
+
+The try block is divided into four sections.
+
+The **first section** pertains to the **configuration of the Job**.
+
+It contains sub-methods related to configuration.
+One of these sub-methods is ``Sensitivity``:
+
+```php
+function Sensitivity($level=3)
+```
+
+which sets the sensitivity level for this job.
+- Levels:
+    - Level 1: If none of the columns change, the data is retrieved.
+    - Level 2: If there are issues during changes, the data is retrieved.
+    - Level 3: Simultaneous use of both Level 1 and Level 2.
+
+The **secound section** pertains to the **Fetching User Data**.
+
+This is done through the ``Get`` method.
+
+```php
+function Get ($table_class,$primary_value) : object
+```
+
+The first parameter specifies the class name of the data table, and the second parameter provides the primary value for the data table.
+
+> [!NOTE]
+> The table must have a primary key for it to be usable in the Job.
+
+ 
+The **third section** pertains to the **project-specific exceptions**.
+
+These exceptions can include checks on user balances, access levels, and other custom conditions.
+
+
+The **fourth section** pertains to the **data editing**.
+
+This is done through the ``Edit`` method.
+
+```php
+function Edit (object $row,string $key,$value)
+```
+
+The **first parameter** essentially corresponds to the **output of the Get** method. The **second parameter** represents the **key name** that you intend to edit, and the **third parameter** is the **value** you want to assign to that column.
+
+The other aspects are automatically controlled.
+
+The only manual action required is for handling ``ERR_RECOVERY``.
+
+> [!CAUTION]
+> This error occurs when editing one of the columns (in essence, one of the Edit functions) encounters an issue (based on sensitivity level). After data recovery, if the problem persists, the data is lost.
+
+When this error occurs, a new property called ``data`` is added to the exception. This property contains all the recovered data (in case manual recovery is needed). You can save this data in a JSON file.
+
+Consider the following example:
+
+```php
+...
+} catch (\Lanous\db\Exceptions\Jobs $e) {
+    if ($error->getCode() == $error::ERR_RECOVERY) {
+        $recovery_data = $error->data;
+        $ErrorDetails = $error->getMessage();
+        $time = time();
+        file_put_contents($time."_data_losted.json",json_encode($recovery_data,128|256));
+        print("recovery error!");
+        // Both users should be disabled in this section.
+        // The file and $Error should be sent to the site administrator via email.
+        unlink($time."_data_losted.json"); // After the data is sent to the email, delete the file
+        // After manually recovering the data or resolving the issue, re-enable the users
+    }
+...
+```
+**{time}_data_losted.json**
+```json
+{
+    "MyLanous\\Tables\\Wallet": {
+        "1": {
+            "user_id": {
+                ...
+                "value": 1
+            },
+            "usd": {
+                ...
+                "value": 160000
+            }
+        },
+        "2": {
+            "user_id": {
+                ...
+                "value": 2
+            },
+            "usd": {
+                ...
+                "value": 30000
+            }
+        }
+    }
+}
+```
+
+> [!TIP]
+> If the table structures have been correctly created and the data in the tables do not have any issues, the likelihood of encountering this error is very low, so don’t worry.
+> better safe than sorry :people_hugging:
