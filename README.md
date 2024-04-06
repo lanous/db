@@ -363,6 +363,7 @@ To enter data into a data table, we use the OpenTable method. This method has se
     - **QuickFind**: Searches for specific data.
     - **Order**: Sorts data.
     - **Where**: Filters data based on specified conditions.
+  
 For inserting data into the database, we use the ``Insert()`` method. This class utilizes two additional methods: ``Set()`` and ``Push()``.
 
 **Set**: Assigns data to a specific column.
@@ -415,3 +416,200 @@ $Table = $database->OpenTable ("Users");
 ...
 ```
 
+# extracting output from a table.
+
+Similar to before, you first need to open the data table (although if you’ve already opened the table for inserting data into a variable, you don’t need to repeat this step!!!).
+
+After opening the table, use the Select sub-method. Essentially, by using Select, you choose a row and extract output from it. The Select method accepts several optional parameters:
+- Parameters
+    - Column: Specify the column(s) from which you want to retrieve data. Separate column names with commas. For example, first_name, last_name. If you want all columns, use * (which is the default).
+    - Distinct: If you want the output data to be non-repetitive, set the value of distinct to true.
+    - Order_By: To sort the output.
+    - Limit: If you want to limit the number of output rows (e.g., retrieve only the first 100 rows), specify a numeric value for this parameter.
+    - Offset: If you’ve set a limit, you can also use offset.
+
+If you want to use ORDER BY, you should use the specific method for it, which is Order. This method is a sub-method of OpenTable:
+
+```php
+Order(array $columns, string $direction = null)
+```
+
+Consider an example of how to create an Order:
+
+```php
+
+$Order = $Table::Order([
+    "first_name" => Lanous\db\Lanous::ORDER_ASC,
+    "last_name" => Lanous\db\Lanous::ORDER_DESC
+]);
+
+```
+
+n this example, Order sorts the names in ascending order (ASC) based on first name and then in descending order (DESC) based on last name. Additionally, if you only specify column names, you can set the sorting order for those columns. For instance:
+
+```php
+$Order = $Table::Order(["first_name", "last_name"], Lanous\db\Lanous::ORDER_ASC);
+```
+
+After creating the Order object, you can pass it as a parameter to Select. In general, a Select statement can be written as follows:
+
+```php
+$Table->Select(
+    column: "*",
+    distinct: false,
+    order_by: $Order,
+    limit: 100,
+    offset: 0
+);
+```
+
+Note that we are currently using default parameters, so you don’t need to specify all the options:
+
+```php
+$Table = $database->OpenTable (MyLanous\Tables\Users::class);
+$Select = $Table->Select();
+// To write the code more cleanly, it is better to write it like this
+// $Select = $Table->Select(column: "*");
+```
+
+After configuring the Select parameters, use the Extract sub-method to retrieve your data.
+```php
+Extract (Where $where = null, $primary_value = null): false | RowReturn
+```
+
+Similar to Order, you need to create an object for Where using the Where sub-method (which is a sub-method of OpenTable).
+
+If you want to find a column via its primary key, do not use Where. Instead, provide the primary key value as the second parameter. For example, I’ve set the ``id`` column as the **primary key**, and now I want to access other columns using the user’s id. Consider the following example:
+
+```php
+$Find_ID1 = $Select->Extract(primary_value: 1);
+```
+
+Using this parameter, we specify that we want to find the primary key with an ID of 1.
+
+Otherwise, if you want to manually perform these actions (e.g., finding a data entry via first_name and last_name), we use the Where object. For example:
+```php
+$Where = $Table->Where("first_name", "=", "mohammad")
+                            ->AND("last_name", "=", "azad");
+```
+The Where sub-methods include ``AND`` and ``OR``, which have similar structures and can be combined as needed.
+
+After creating $Where, you can pass it as a parameter to the Extract method:
+
+```php
+$Find_MohammadAzad = $Select->Extract(where: $Where);
+```
+
+Outputting Data in Various Forms and Modes Is Possible
+
+``Values``: This mode only outputs the values. For example:
+
+```php
+$row[0] == "1";
+$row[1] == "mohammad";
+$row[2] == "azad";
+```
+
+``Methods``: In this mode, only the methods defined in the data type are output as an object. For example:
+
+```php
+$row->first_name->test($a, $b);
+```
+
+``Keys``: This mode displays only the column names. For example:
+
+```php
+$row[0] == "id";
+$row[1] == "first_name";
+$row[2] == "last_name";
+```
+
+``ArrayType`` (**Default**): In this mode, the keys of the array correspond to column names, and their values match the values in the table columns. For example:
+
+```php
+$row["first_name"] == "mohammad";
+```
+
+``ObjectType``: This mode is used to access data type properties, methods, and values. Each column’s output includes these features:
+
+``value;``: The actual value.
+
+``methods->{METHOD_NAME}(PARAMETERS);``: Access to methods.
+
+``{PropertiesDataType};``: Data type of properties.
+
+```php
+$row->first_name->value == "mohammad"
+$row->first_name->methods->test('foo', 'bar')
+$row->first_name->my_property == "i'm varchar"
+```
+
+To retrieve all data from the Rows feature, we use:
+
+```php
+$Table->Select(column: "*")->Extract($Where)->Rows;
+```
+
+By default, the output data type from this operation is an Array.
+
+For using other forms and models, we utilize two additional sub-methods:
+
+```php
+FirstRow(int $mode=self::ArrayType)
+```
+
+To obtain the oldest recorded data from the results.
+
+```php
+LastRow(int $mode=self::ArrayType)
+```
+
+To retrieve the most recent data from the results.
+
+Please refer to the following examples:
+
+**Values Example**
+```php
+$UsersTable = $database->OpenTable (MyLanous\Tables\Users::class);
+$User = $UsersTable->Select(column: "*")->Extract(primary_value: 1);
+$UserData = $User->LastRow(\Lanous\db\Table\RowReturn::Values);
+return $UserData[1];
+// mohammad
+```
+
+**Methods Example**
+```php
+$UsersTable = $database->OpenTable (MyLanous\Tables\Users::class);
+$User = $UsersTable->Select(column: "*")->Extract(primary_value: 1);
+$UserMethods = $User->LastRow(\Lanous\db\Table\RowReturn::Methods);
+return $UserMethods->first_name->test('foo','bar');
+// Hello mohammad p.a = foo and p.b = bar
+```
+
+**Keys Example**
+```php
+$UsersTable = $database->OpenTable (MyLanous\Tables\Users::class);
+$User = $UsersTable->Select(column: "*")->Extract(primary_value: 1);
+$UserColumns = $User->LastRow(\Lanous\db\Table\RowReturn::Keys);
+return $UserColumns[1];
+// first_name
+```
+
+**ArrayType (Default) Example**
+```php
+$UsersTable = $database->OpenTable (MyLanous\Tables\Users::class);
+$User = $UsersTable->Select(column: "*")->Extract(primary_value: 1);
+$UserColumns = $User->LastRow(\Lanous\db\Table\RowReturn::ArrayType);
+return $UserColumns["first_name"];
+// mohammad
+```
+
+**ObjectType Methods**
+```php
+$UsersTable = $database->OpenTable (MyLanous\Tables\Users::class);
+$User = $UsersTable->Select(column: "*")->Extract(primary_value: 1);
+$UserData = $User->LastRow(\Lanous\db\Table\RowReturn::ObjectType);
+$UserData->first_name->value; # mohammad
+$UserData->first_name->my_property; # i'm varchar
+$UserData->first_name->methods->test('foo','bar'); # Hello mohammad p.a = foo and p.b = bar
+```
