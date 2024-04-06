@@ -183,3 +183,100 @@ $database = new Database\Connect(new LanousConfig);
 After the initial execution, a directory is created in the configured folder (``project_dir``) with the name specified in the configuration class (``project_name``).
 
 Follow the instructions to examine each of these directories.
+
+## Set data table structure - create a new table
+
+The ‘Tables’ folder is the location where data table structures are stored. The filenames essentially represent the class and table names (meaning all three should match). To create a data table, you need to create a namespace with the project name and inherit from \Lanous\db\Structure\Table
+
+### General Structure
+```php
+namespace {project_name}\Tables;
+
+class {table_name} extends \Lanous\db\Structure\Table {
+
+...
+
+}
+```
+
+We complete the table structure and add columns using the functions defined in the parent class.
+
+Below, we explain the functions related to the columns:
+
+### Functions
+
+``AddColumn(string $name)``: Specifies the name of the column.
+
+    -Sub-Methods:
+    
+        -DataType($object): The name of the data type class (List: DataTypes\x.php)
+        
+        -Size($size): Data type size
+
+        -AutoIncrement(bool $value): Auto increment if set to true
+
+        -Enum($class): Set enum as value
+
+        -Constraints(
+            bool $Primary=false,
+            bool $not_null=false,
+            bool $UNIQUE=false,
+            $default=false,
+            $check=false
+        ): Constraints settings
+
+``Injection($column_name)``: Before data is entered into the database, it passes through this function.
+
+    -Sub-Methods:
+    
+        -Evaluation(callable $callback): Data validation
+        
+        -Edit(callable $callback): Data editing using callable
+        
+``Extract($column_name)``: After data is retrieved from the database, it also passes through this function.
+
+    -Sub-Methods:
+    
+        -Evaluation(callable $callback): Data validation
+        
+        -Edit(callable $callback): Data editing using callable
+
+### An example of the table class
+
+```php
+<?php
+# MyLanous/Tables/Information.php
+
+namespace MyLanous\Table;
+
+class Information extends \Lanous\db\Structure\Table {
+    public function __construct() {
+        $this->AddColumn("user_id")
+            ->DataType(\MyLanous\DataTypes\Integer::class)
+            ->Size(255)
+            ->AutoIncrement(true)
+            ->Constraints(Primary: true);
+
+        $this->AddColumn("first_name")
+            ->DataType(\MyLanous\DataTypes\Varchar::class)
+            ->Size(255)
+            ->Constraints(not_null: true);
+
+        $this->AddColumn("last_name")
+            ->DataType(\MyLanous\DataTypes\Varchar::class)
+            ->Size(255)
+            ->Constraints(not_null: true);
+
+        $this->AddColumn("password")
+            ->DataType(\MyLanous\DataTypes\Varchar::class)
+            ->Size(255)
+            ->Constraints(not_null: true);
+
+        // Automatic encryption - decryption (base64)
+        $this->Injection(self::password)
+            ->Edit(fn($data) => base64_encode($data));
+        $this->Extract(self::password)
+            ->Edit(fn($data) => base64_decode($data));
+    }
+}
+```
