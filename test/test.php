@@ -16,11 +16,11 @@ class LanousConfig {
 
 $database = new Database\Connect(new LanousConfig);
 
-$database->Setting->Table(MyLanous\Table\Wallet::class)
-    ->FOREIGN_KEY("user_id",MyLanous\Table\Users::class,"id");
+$database->Setting->Table(MyLanous\Tables\Wallet::class)
+    ->FOREIGN_KEY("user_id",MyLanous\Tables\Users::class,"id");
 
-$WalletTable = $database->OpenTable (MyLanous\Table\Wallet::class);
-$UsersTable = $database->OpenTable (MyLanous\Table\Users::class);
+$WalletTable = $database->OpenTable (MyLanous\Tables\Wallet::class);
+$UsersTable = $database->OpenTable (MyLanous\Tables\Users::class);
 
 /*
 $UsersTable->Insert()
@@ -36,9 +36,9 @@ $WalletTable->Insert()
 ->Push();
 */
 
-$Table = $database->OpenTable (MyLanous\Table\Users::class);
+$Table = $database->OpenTable (MyLanous\Tables\Users::class);
 $User = $Table->Select(column: "*")->Extract(primary_value: 1);
-$Wallet = $User->Child (MyLanous\Table\Wallet::class); #Check L.N 19
+$Wallet = $User->Child (MyLanous\Tables\Wallet::class); #Check L.N 19
 $UserData = $User->LastRow();
 // echo "Hello ".$UserData['first_name']."! - Your dollar wallet: $".$Wallet['usd'];
 # Hello mohammad! - Your dollar wallet: $5000
@@ -51,7 +51,7 @@ $UserData2 = $Table->QuickFind(2);
 $method_1 = $Table->Select(column: "*")->Extract(primary_value: 1);
 
 # The second method
-$Where = $Table->Where(MyLanous\Table\Users::ID,"=",1);
+$Where = $Table->Where(MyLanous\Tables\Users::ID,"=",1);
 $method_2 = $Table->Select(column: "*")->Extract($Where);
 $data = $method_2;
 
@@ -62,7 +62,7 @@ $callback_test = $method_2->Callback(function ($column,$value) {
         return $value;
     }
 });
-$created_at2 = $callback_test->LastRow(\Lanous\db\Table\RowReturn::ObjectType);
+$created_at2 = $callback_test->LastRow(\Lanous\db\Tables\RowReturn::ObjectType);
 var_dump($created_at2->created_at->Date->MakeArray());
 
 /*
@@ -94,13 +94,13 @@ if ($data == false)
 $data->LastRow()["first_name"];
 # mohammad
 
-$data->LastRow($data::ObjectType)->{MyLanous\Table\Users::join_time}->Date->format("Y-m-d H:i:s");
+$data->LastRow($data::ObjectType)->{MyLanous\Tables\Users::join_time}->Date->format("Y-m-d H:i:s");
 # "2024-04-05 12:17:03"
 
-$data->LastRow($data::ObjectType)->{MyLanous\Table\Users::status}->value;
+$data->LastRow($data::ObjectType)->{MyLanous\Tables\Users::status}->value;
 # enum(MyLanous\Table\UsersStatus::Active)
 
-$data->LastRow($data::ObjectType)->{MyLanous\Table\Users::status}->value->toPersian();
+$data->LastRow($data::ObjectType)->{MyLanous\Tables\Users::status}->value->toPersian();
 # فعال
 
 $data->LastRow($data::ArrayType)['first_name'];

@@ -1,6 +1,6 @@
 <?php
 
-namespace MyLanous\Table;
+namespace MyLanous\Tables;
 
 enum UsersStatus {
     case Active;

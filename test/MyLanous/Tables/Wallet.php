@@ -1,6 +1,6 @@
 <?php
 
-namespace MyLanous\Table;
+namespace MyLanous\Tables;
 
 class Wallet extends \Lanous\db\Structure\Table {
     public function __construct() {
