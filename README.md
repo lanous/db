@@ -650,6 +650,8 @@ During the program, we encounter a set of errors that are categorized as follows
 
 **PHP Fatal error**: Uncaught Lanous\db\Exceptions\{``type``}: ``ERROR MESSAGE`` [``ERROR_CODE``]
 
+![image](https://github.com/lanous/db/assets/158297225/de8f2381-e9c9-45ad-8717-2653df7fb2b6)
+
 ## Config Errors
 type: ``Config``
 - **ERR_CGCLSIC**: Occurs when your configuration structure is incorrect (e.g., some constants are not defined or have version-related issues).
@@ -709,3 +711,34 @@ try {
 
 }
 ```
+## Examples of errors occurring
+### ERR_CGCLSIC
+```php
+class LanousConfig {
+    // const hostname = '127.0.0.1';
+    ...
+}
+```
+> [!CAUTION]
+>  PHP Fatal error:  Uncaught Lanous\db\Exceptions\Config: The configuration structure has not been written correctly;
+>      please review the documentation carefully [$e::ERR_CGCLSIC]
+### ERR_CNCTERR
+```php
+class LanousConfig {
+    ...
+    const username = 'incorrect_username';
+    const password = 'incorrect_password';
+    ...
+}
+```
+> [!CAUTION]
+>  PHP Fatal error:  Uncaught Lanous\db\Exceptions\init: The database connection encountered an issue;
+>      the configuration information (including host, username, password, and database name) is incorrect! [$e::ERR_CNCTERR]
+### ERR_CLUMNND
+```php
+$Table->Insert()
+    ->Set("unknown_column","Mohammad")
+->Push();
+```
+> [!CAUTION]
+> PHP Fatal error:  Uncaught Lanous\db\Exceptions\Structure: The column you intend to work on is undefined and unknown in the data table class. [$e::ERR_CLUMNND]
