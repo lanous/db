@@ -37,11 +37,6 @@ class Select extends \Lanous\db\Lanous {
         $stmt = $this->database->query($query);
         $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        /*array_walk($data,function ($values,$data_key) use (&$data) {
-            array_walk($values,function ($column_value,$column_name) use (&$data,$data_key) {
-                $data[$data_key][$column_name] = $this->ValuePreparation($this->table_name,$column_name,$column_value);
-            });
-        });*/
         if (count($data) == 0)
             return false;
         return new RowReturn($data,$this->dbsm,$this->database,$this->table_name);

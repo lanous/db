@@ -2,7 +2,6 @@
 
 namespace MyLanous\Table;
 
-
 class Wallet extends \Lanous\db\Structure\Table {
     public function __construct() {
         $this->AddColumn("user_id")

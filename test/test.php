@@ -9,7 +9,7 @@ class LanousConfig {
     const username = 'root';
     const password = '';
     const database = "lanous";
-    const dbsm = "mysql";
+    const dbsm = Database\Lanous::DBSM_Mysql;
     const project_name = "MyLanous";
     const project_dir = __DIR__;
 }
