@@ -18,7 +18,10 @@ trait ValuePreparation
         $table = new $table_class();
         $table = $table->Result();
         $DataHandling = $table[\Lanous\db\Structure\Table::Result['DataHandling']];
-        $ColumnData = $table[\Lanous\db\Structure\Table::Result['Columns']][$column_name] ?? throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_CLUMNND);
+        $ColumnData = $table[\Lanous\db\Structure\Table::Result['Columns']][$column_name] ?? throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_CLUMNND,[
+            "TableClass"=>$table_class,
+            "ColumnName"=>$column_name
+        ]);
         $Enum = $ColumnData[\Lanous\db\Structure\Table::Column["ENUM"]] ?? false;
         $DataType = new $ColumnData["type"]($value);
         
@@ -45,7 +48,11 @@ trait ValuePreparation
                 $value = $value->name;
             }
             if(!$DataType->Validation($value)) {
-                throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_VLDDTYP);
+                throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_VLDDTYP,[
+                    "DataType"=>$ColumnData["type"],
+                    "Column"=>$column_name,
+                    "ValidatedData"=>$value
+                ]);
             }
             if (isset($DataHandling["Injection"][$column_name])) {
                 if(isset($DataHandling["Injection"][$column_name][\Lanous\db\Structure\Table::DataHandling["Evaluation"]])) {

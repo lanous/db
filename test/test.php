@@ -16,26 +16,83 @@ class LanousConfig {
 
 $database = new Database\Connect(new LanousConfig);
 
-$database->Setting->Table(MyLanous\Tables\Wallet::class)
-    ->FOREIGN_KEY("user_id",MyLanous\Tables\Users::class,"id");
-
-$WalletTable = $database->OpenTable (MyLanous\Tables\Wallet::class);
-$UsersTable = $database->OpenTable (MyLanous\Tables\Users::class);
+$Wallet = $database->OpenTable (MyLanous\Tables\Wallet::class);
+$Users = $database->OpenTable (MyLanous\Tables\Users::class);
 
 /*
-$UsersTable->Insert()
-    ->Set(MyLanous\Table\Users::first_name,"Mohammad")
-    ->Set(MyLanous\Table\Users::last_name,"azad")
-    ->Set(MyLanous\Table\Users::address,["city"=>"karaj"])
-    ->Set(MyLanous\Table\Users::status,MyLanous\Table\UsersStatus::Active)
+$Users->Insert()
+    ->Set("first_name","mohammad")
+    ->Set("last_name","azad")
+    ->Set("status",MyLanous\Tables\UsersStatus::Active)
+    ->Set("address",[])
 ->Push();
 
-$WalletTable->Insert()
+$Users->Insert()
+    ->Set("first_name","reza")
+    ->Set("last_name","ahmadi")
+    ->Set("status",MyLanous\Tables\UsersStatus::Active)
+    ->Set("address",[])
+->Push();
+
+$Wallet->Insert()
     ->Set("user_id",1)
+    ->Set("usd",5000)
+->Push();
+$Wallet->Insert()
+    ->Set("user_id",2)
     ->Set("usd",5000)
 ->Push();
 */
 
+$database->Setting->Table(MyLanous\Tables\Wallet::class)
+    ->FOREIGN_KEY("user_id",MyLanous\Tables\Users::class,"id");
+
+try {
+
+    $Job = $database->NewJob();
+    $Job->Sensitivity(3);
+
+    $User2 = $Job->Get(MyLanous\Tables\Users::class,2);
+
+    $Wallet1 = $Job->Get(MyLanous\Tables\Wallet::class,1);
+    $USD1 = $Wallet1->data['usd']->value;
+    $Wallet2 = $Job->Get(MyLanous\Tables\Wallet::class,2);
+    $USD2 = $Wallet2->data['usd']->value;
+
+    if ($USD2 < 5000)
+        throw new \Exception("The balance of the first user is insufficient for the transfer",100);
+
+    $Job->Edit($Wallet1,"usd",$USD1 + 5000);
+    $Job->Edit($Wallet2,"usd",$USD2 - 5000);
+    
+} catch (\Lanous\db\Exceptions\Jobs $error) {
+
+    if ($error->getCode() == $error::ERR_RECOVERY) {
+        // -- Be sure to specify this case in the catch --
+        // If the error code is ERR_RECOVERY, it means that the data recovery has encountered an error
+        // and it is better to check the operation manually.
+        echo "Recovery Error";
+        $recovery_data = $error->data;
+        file_put_contents(time()."_data_losted.json",json_encode($recovery_data,128|256));
+        $Error = $error->getMessage();
+    } elseif ($error->getCode() == $error::ERR_NOCHANGE) {
+        // No changes were made to one of the rows
+    } elseif ($error->getCode() == $error::ERR_EXPERROR) {
+        // An error occurred while applying the changes.
+    } elseif ($error->getCode() == $error::ERR_CANTFIND) {
+        // One of the data was not found in the get method.
+    } elseif ($error->getCode() == $error::ERR_DUPLICTE) {
+        // When the repeated get method is written, you will encounter this error.
+    }
+
+} catch (\Exception $e) {
+    if ($e->getCode() == 100) {
+        echo ("Your inventory is insufficient.");
+    }
+}
+
+
+/*
 $Table = $database->OpenTable (MyLanous\Tables\Users::class);
 $User = $Table->Select(column: "*")->Extract(primary_value: 1);
 $Wallet = $User->Child (MyLanous\Tables\Wallet::class); #Check L.N 19
@@ -62,9 +119,9 @@ $callback_test = $method_2->Callback(function ($column,$value) {
         return $value;
     }
 });
-$created_at2 = $callback_test->LastRow(\Lanous\db\Tables\RowReturn::ObjectType);
+$created_at2 = $callback_test->LastRow(\Lanous\db\Table\RowReturn::ObjectType);
 var_dump($created_at2->created_at->Date->MakeArray());
-
+*/
 /*
 array(7) {
   ["id"]=>
@@ -86,7 +143,7 @@ array(7) {
   int(1712324262)
 }
 */
-
+/*
 if ($data == false)
     exit("no data found!");
 # LastRow | FirstRow
@@ -97,10 +154,10 @@ $data->LastRow()["first_name"];
 $data->LastRow($data::ObjectType)->{MyLanous\Tables\Users::join_time}->Date->format("Y-m-d H:i:s");
 # "2024-04-05 12:17:03"
 
-$data->LastRow($data::ObjectType)->{MyLanous\Tables\Users::status}->value;
+$data->LastRow($data::ObjectType)->{MyLanous\Table\Users::status}->value;
 # enum(MyLanous\Table\UsersStatus::Active)
 
-$data->LastRow($data::ObjectType)->{MyLanous\Tables\Users::status}->value->toPersian();
+$data->LastRow($data::ObjectType)->{MyLanous\Table\Users::status}->value->toPersian();
 # فعال
 
 $data->LastRow($data::ArrayType)['first_name'];
@@ -121,7 +178,7 @@ $data->LastRow($data::ObjectType)->first_name
 $data->LastRow($data::Values)[1];
 // mohammad
 
-
+*/
 
 /*
 

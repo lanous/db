@@ -9,13 +9,14 @@ class Config extends \Exception {
      */
     const ERR_CGCLSIC = 500;
     public function __construct(int $code = 0, \Throwable $previous = null) {
+        $this->code = $code;
         $constantNames = array_flip(array_filter((new \ReflectionClass(__CLASS__))->getConstants(),static fn($v) => is_scalar($v)));
         $constantNames = $constantNames[$code];
         $PHPDocs = new \ReflectionClassConstant(__CLASS__,$constantNames);
         $PHPDocs = $PHPDocs->getDocComment();
         $PHPDocs = str_replace(["/**","*/","*"],"",$PHPDocs);
         $PHPDocs = trim($PHPDocs);
-        $this->message = $PHPDocs;
+        $this->message = $PHPDocs." [".__CLASS__."::$constantNames]";
         $trace = $this->getTrace();
         unset($trace[0]);
         if(count($trace) > 0) {
