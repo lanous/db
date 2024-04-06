@@ -75,7 +75,8 @@ class Column {
         Table::$Column[$this->name][Table::Column["DataType"]] = $object;
         return $this;
     }
-    public function Size($size) {
+    public function Size(...$size) {
+        $size = implode(",",$size);
         Table::$Column[$this->name][Table::Column["DataSize"]] = $size;
         return $this;
     }
