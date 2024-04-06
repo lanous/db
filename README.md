@@ -572,8 +572,8 @@ Please refer to the following examples:
 ```php
 $UsersTable = $database->OpenTable (MyLanous\Tables\Users::class);
 $User = $UsersTable->Select(column: "*")->Extract(primary_value: 1);
-$UserData = $User->LastRow(\Lanous\db\Table\RowReturn::Values);
-return $UserData[1];
+$UserValues = $User->LastRow(\Lanous\db\Table\RowReturn::Values);
+return $UserValues[1];
 // mohammad
 ```
 
@@ -613,3 +613,67 @@ $UserData->first_name->value; # mohammad
 $UserData->first_name->my_property; # i'm varchar
 $UserData->first_name->methods->test('foo','bar'); # Hello mohammad p.a = foo and p.b = bar
 ```
+
+# How to update a row/rows?
+
+Just like the previous explanation, this is another method that exists in OpenTable:
+
+```php
+Update() : Update
+```
+
+The Update method includes the following sub-methods:
+
+```php
+Edit(string $column_name, mixed $to) : Update
+```
+
+and
+
+```php
+Push(Where $where = null, $primary_value = null)
+```
+
+**example**
+
+```php
+$Table = $database->OpenTable (MyLanous\Tables\Users::class);
+$Table->Update()
+    ->Edit("password", "987654321")
+    ->Edit("first_name", "new_name")
+    ->Edit("last_name", "new_lastname")
+->Push(primary_value: 1);
+```
+
+# Exceptions
+During the program, we encounter a set of errors that are categorized as follows:
+
+**PHP Fatal error**: Uncaught Lanous\db\Exceptions\{``type``}: ``ERROR MESSAGE`` [``ERROR_CODE``]
+
+## Config Errors
+type: ``Config``
+- **ERR_CGCLSIC**: Occurs when your configuration structure is incorrect (e.g., some constants are not defined or have version-related issues).
+## Initialization Errors
+type: ``init``
+- **ERR_CNCTERR**: Indicates that the database connection was unsuccessful.
+## Jobs error
+- **ERR_RECOVERY**: Encountered during data recovery.
+- **ERR_NOCHANGE**: Everything is correct, but data in one of the columns hasn't changed.
+- **ERR_EXPERROR**: Error during row editing.
+- **ERR_DUPLICATE**: Duplicate data received and stored in another variable.
+- **ERR_CANTFIND**: The requested data does not exist.
+## Non-Support Errors
+- **ERR_DBSM**: You are using a DBSM that is not defined in the project.
+## Structure Errors
+- **ERR_TABLEND**: The chosen name is not a class, or the class is not defined correctly (e.g., incorrect class location or missing namespaces).
+- **ERR_ORDERDC**: Typically occurs during ordering (ASC/DESC) operations.
+- **ERR_NMESPCE**: The configured project name as a namespace does not match file and class names.
+- **ERR_VLDDTYP**: Issued by DataType when the data provided is not acceptable (e.g., passing a string instead of an array for ArrayData).
+- **ERR_CLUMNND**: The column you're looking for does not exist. Use constants for column names to avoid typing mistakes.
+- **ERR_CLASSNF**: The specified data type does not exist. Ensure file and class names match and implement \Lanous\db\Structure\DataType.
+- **ERR_MPLEPKY**: You cannot define two or more columns as primary key, primary key is only one key!
+- **ERR_DTYPEIC**: Incorrect data type structure.
+- **ERR_NOTENUM**: When using ENUM in a table class, the parameter provided is not an ENUM.
+- **ERR_IFEINPR**: Parameter conflict during input (e.g., using both primary_value and where simultaneously).
+- **ERR_PKNOTST**: Primary Key not set (usually when setting a data parameter as a primary key)
+- **ERR_RFRNCNF**: Related to Foreign keys (further explanation to follow).
