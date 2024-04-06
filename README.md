@@ -179,3 +179,7 @@ class LanousConfig {
 
 $database = new Database\Connect(new LanousConfig);
 ```
+
+After the initial execution, a directory is created in the configured folder (``project_dir``) with the name specified in the configuration class (``project_name``).
+
+Follow the instructions to examine each of these directories.
