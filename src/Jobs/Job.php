@@ -23,32 +23,32 @@ class Job {
      * @param string $table_name The class of the data table in which you want to look up the primary key value
      * @param string $primary_value The value of the primary key column
      */
-    public function Get ($table_name,$primary_value) {
-        if(isset($this->datas[$table_name][$primary_value])) {
+    public function Get ($table_class,$primary_value) : object {
+        if(isset($this->datas[$table_class][$primary_value])) {
             throw new \Lanous\db\Exceptions\Jobs(\Lanous\db\Exceptions\Jobs::ERR_DUPLICTE);
         }
-        $Table = new \Lanous\db\Table\Table($table_name,$this->dbsm,$this->database);
-        if (!isset($this->primarys[$table_name])) {
+        $Table = new \Lanous\db\Table\Table($table_class,$this->dbsm,$this->database);
+        if (!isset($this->primarys[$table_class])) {
             $FindPrimary = $Table->Describe();
             foreach($FindPrimary as $Value) {
                 if ($Value["Key"] == "PRI")
-                    $this->primarys[$table_name] = $Value["Field"]; break;
+                    $this->primarys[$table_class] = $Value["Field"]; break;
             }
         }
-        $Where = $Table->Where($this->primarys[$table_name],"=",$primary_value);
+        $Where = $Table->Where($this->primarys[$table_class],"=",$primary_value);
         $Datas = $Table->Select("*")->Extract($Where);
         $Datas = $Datas->Rows[0] ?? throw new \Lanous\db\Exceptions\Jobs(\Lanous\db\Exceptions\Jobs::ERR_CANTFIND);
-        $this->datas[$table_name][$primary_value] = $Datas;
-        return (object) ['table_name'=>$table_name,'data'=>$Datas];
+        $this->datas[$table_class][$primary_value] = $Datas;
+        return (object) ['table_class'=>$table_class,'data'=>$Datas];
     }
 
     public function Edit (object $row,string $key,$value) : bool {
-        $table_name = $row->table_name;
+        $table_class = $row->table_class;
         $row_data = $row->data;
-        $primary_value = $this->primarys[$table_name];
-        $primary_value = $row_data->{$primary_value}->value;
-        $Table = new \Lanous\db\Table\Table($table_name,$this->dbsm,$this->database);
-        $where = $Table->Where($this->primarys[$table_name],"=",$primary_value);
+        $primary_value = $this->primarys[$table_class];
+        $primary_value = $row_data[$primary_value]->value;
+        $Table = new \Lanous\db\Table\Table($table_class,$this->dbsm,$this->database);
+        $where = $Table->Where($this->primarys[$table_class],"=",$primary_value);
         try {
             $result = $Table->Update()->Edit($key,$value)->Push($where);
             if ($result == 0 and ($this->sensitivity == 1 or $this->sensitivity == 3)) {
@@ -58,7 +58,7 @@ class Job {
         } catch (\Throwable $th) {
             $this->RestoreData();
             if(get_class($th) != "Lanous\db\Exceptions\Jobs") {
-                throw new \Lanous\db\Exceptions\Jobs(\Lanous\db\Exceptions\Jobs::ERR_EXPERROR);
+                throw new \Lanous\db\Exceptions\Jobs(\Lanous\db\Exceptions\Jobs::ERR_EXPERROR,$th);
             } else {
                 throw $th;
             }
@@ -67,16 +67,18 @@ class Job {
     }
 
     private function RestoreData () {
-        foreach ($this->datas as $table_name => $primaries_keys) {
+        foreach ($this->datas as $table_class => $primaries_keys) {
             foreach ($primaries_keys as $primary_value => $data) {
-                $primary_key = $this->primarys[$table_name];
-                $Table = new \Lanous\db\Table\Table($table_name,$this->dbsm,$this->database);
+                $primary_key = $this->primarys[$table_class];
+                $Table = new \Lanous\db\Table\Table($table_class,$this->dbsm,$this->database);
                 $Where = $Table->Where($primary_key,"=",$primary_value);
                 foreach ($data as $column_name=>$value) {
                     try {
                         $Table->Update()->Edit($column_name,$value->value)->Push($Where);
+                        unset($this->datas[$table_class][$primary_value]);
+                        if(isset($this->datas[$table_class]) && count($this->datas[$table_class]) == 0) { unset($this->datas[$table_class]); }
                     } catch (\Throwable $th) {
-                        throw new \Lanous\db\Exceptions\Jobs(\Lanous\db\Exceptions\Jobs::ERR_RECOVERY);
+                        throw new \Lanous\db\Exceptions\Jobs(\Lanous\db\Exceptions\Jobs::ERR_RECOVERY,$th,$this->datas);
                     }
                 }
             }

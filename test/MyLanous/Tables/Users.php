@@ -1,6 +1,6 @@
 <?php
 
-namespace MyLanous\Table;
+namespace MyLanous\Tables;
 
 enum UsersStatus {
     case Active;
@@ -46,14 +46,17 @@ class Users extends \Lanous\db\Structure\Table {
             ->Size(255)
             ->Constraints(not_null: true);
 
-
         $this->AddColumn(self::status)
             ->DataType(\MyLanous\DataTypes\Varchar::class)
             ->Size(255)
-            ->Enum(UsersStatus::class);
+            ->Enum(UsersStatus::class)
+            ->Constraints(not_null: true);
+
 
         $this->AddColumn(self::address)
-            ->DataType(\MyLanous\DataTypes\ArrayData::class);
+            ->DataType(\MyLanous\DataTypes\ArrayData::class)
+            ->Constraints(not_null: true);
+
 
         $this->AddColumn(self::join_time)
             ->DataType(\MyLanous\DataTypes\Timestamp::class)

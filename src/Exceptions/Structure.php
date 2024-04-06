@@ -21,10 +21,6 @@ class Structure extends \Exception {
      */
     const ERR_VLDDTYP = 897;
     /**
-     * The insert structure is not written correctly, please check the documentation.
-     */
-    const ERR_INSTPTN = 896;
-    /**
      * The column you intend to work on is undefined and unknown in the data table class.
      */
     const ERR_CLUMNND = 895;
@@ -58,14 +54,15 @@ class Structure extends \Exception {
      */
     const ERR_RFRNCNF = 888;
 
-    public function __construct(int $code = 0, \Throwable $previous = null) {
+    public function __construct(int $code = 0, $details=null) {
+        $this->code = $code;
         $constantNames = array_flip(array_filter((new \ReflectionClass(__CLASS__))->getConstants(),static fn($v) => is_scalar($v)));
         $constantNames = $constantNames[$code];
         $PHPDocs = new \ReflectionClassConstant(__CLASS__,$constantNames);
         $PHPDocs = $PHPDocs->getDocComment();
         $PHPDocs = str_replace(["/**","*/","*"],"",$PHPDocs);
         $PHPDocs = trim($PHPDocs);
-        $this->message = $PHPDocs;
+        $this->message = $PHPDocs." [".__CLASS__."::$constantNames]";
         $trace = $this->getTrace();
         unset($trace[0]);
         if(count($trace) > 0) {
@@ -74,6 +71,18 @@ class Structure extends \Exception {
                 if(isset($x['file']) && isset($x['line']))
                     $this->message .= "|- Filename: ".$x["file"]." (l.n:".$x["line"].")\n";
             },$trace);
+            $this->message .= "-------------\n";
+        }
+        if($code == self::ERR_VLDDTYP) {
+            $this->message .= "\n------ details (".__CLASS__.") -------\n";
+            $this->message .= "|- Data Type: ".$details["DataType"]."\n";
+            $this->message .= "|- Column Name: ".$details["Column"]."\n";
+            $this->message .= "|- Validated Data: ".get_debug_type($details["ValidatedData"])."(".strlen($details["ValidatedData"]).") -> '".$details["ValidatedData"]."'\n";
+            $this->message .= "-------------\n";
+        } elseif ($code == self::ERR_CLUMNND) {
+            $this->message .= "\n------ details (".__CLASS__.") -------\n";
+            $this->message .= "|- Table Class: ".$details["TableClass"]."\n";
+            $this->message .= "|- Unknown Column: ".$details["ColumnName"]."\n";
             $this->message .= "-------------\n";
         }
     }

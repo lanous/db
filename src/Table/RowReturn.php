@@ -31,8 +31,8 @@ class RowReturn {
      *  e.g(2): <code>$row->first_name->methods->test($a,$b);</code>
      */
     const ObjectType = 5;
-    public $Rows,$CleanRows;
-    private $dbsm,$database,$table_name;
+    public $Rows;
+    private $dbsm,$database,$table_name,$CleanRows;
     public function __construct ($rows,$dbsm,$database,$table_name){
         $this->Rows = $rows;
         $this->CleanRows = $rows;
@@ -49,14 +49,14 @@ class RowReturn {
 
 
     /**
-     * Display the oldest row added to the data table
+     * Display the oldest row finded to the data table
      */
-    public function FirstRow (int $mode=self::ObjectType) {
+    public function FirstRow (int $mode=self::ArrayType) {
         $data = $this->Rows[0];
         return $this->MODES($data,$mode);
     }
     /**
-     * Display the newest row added to the data table
+     * Display the newest row finded to the data table
      */
     public function LastRow (int $mode=self::ArrayType) {
         $Rows = $this->Rows;
