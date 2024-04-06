@@ -652,6 +652,8 @@ During the program, we encounter a set of errors that are categorized as follows
 
 ![image](https://github.com/lanous/db/assets/158297225/de8f2381-e9c9-45ad-8717-2653df7fb2b6)
 
+https://github.com/lanous/db/assets/158297225/b46a739c-71df-4144-9490-9864989bbbe2
+
 ## Config Errors
 type: ``Config``
 - **ERR_CGCLSIC**: Occurs when your configuration structure is incorrect (e.g., some constants are not defined or have version-related issues).
