@@ -677,3 +677,35 @@ type: ``init``
 - **ERR_IFEINPR**: Parameter conflict during input (e.g., using both primary_value and where simultaneously).
 - **ERR_PKNOTST**: Primary Key not set (usually when setting a data parameter as a primary key)
 - **ERR_RFRNCNF**: Related to Foreign keys (further explanation to follow).
+
+## How to Handle Errors
+```php
+try {
+
+    $Job = $database->NewJob();
+        $Job->Sensitivity(2);
+
+        $User1 = $Job->Get(MyLanous\Table\Users::class,1);
+        $User2 = $Job->Get(MyLanous\Table\Users::class,2);
+
+        $Job->Edit($User1,"amount",50000);
+        $Job->Edit($User2,"amount",100000);
+
+} catch (\Lanous\db\Exceptions\Jobs $error) {
+
+    if ($error->getCode() == $error::ERR_RECOVERY) {
+        // -- Be sure to specify this case in the catch --
+        // If the error code is $error::ERR_RECOVERY, it means that the data recovery has encountered an error
+        // and it is better to check the operation manually.
+    } elseif ($error->getCode() == $error::ERR_NOCHANGE) {
+        // No changes were made to one of the rows
+    } elseif ($error->getCode() == $error::ERR_EXPERROR) {
+        // An error occurred while applying the changes.
+    } elseif ($error->getCode() == $error::ERR_CANTFIND) {
+        // One of the data was not found in the get method.
+    } elseif ($error->getCode() == $error::ERR_DUPLICTE) {
+        // When the repeated get method is written, you will encounter this error.
+    }
+
+}
+```
