@@ -248,7 +248,7 @@ Below, we explain the functions related to the columns:
 # project_name = MyLanous
 # MyLanous/Tables/Information.php
 
-namespace MyLanous\Table;
+namespace MyLanous\Tables;
 
 class Information extends \Lanous\db\Structure\Table {
     public function __construct() {
@@ -281,3 +281,137 @@ class Information extends \Lanous\db\Structure\Table {
     }
 }
 ```
+After creating the class and saving the file, the process of table creation will be done automatically.
+
+Continue reading the descriptions related to data types to expand them.
+
+## Data Type Development
+
+After creating project folders, another folder named DataTypes is automatically generated. All data types that need to be defined for columns are created here. These data types implement \Lanous\db\Structure\DataType.
+
+The DataType class requires four functions for definition:
+
+``__construct``: Data is initially sent to this function when constructing the DataType class. If you intend to extend the data type, store it in a private property.
+
+``Injection``: Before data enters the database (whether through an INSERT or an UPDATE), it is sent to this function. The output of this function becomes the column value. If the data remains unchanged, remember to use ``return $data;``.
+
+``Extraction``: After data is extracted and before it reaches your hands, it enters this function, and the output is sent to you. Similar to before, if no modifications are needed, don’t forget to use ``return $data;``.
+
+``Validation``: Use this function to prevent certain data from entering the database. **It is only called;** consider using exceptions.
+
+Additionally, any function you define other than these is accessible in the output data via the methods property. Any property you add to this class is also accessible alongside the main output (value, methods).
+### Consider the following examples:
+```php
+<?php
+namespace MyLanous\DataTypes;
+class ArrayData implements \Lanous\db\Structure\DataType {
+    const Query = "JSON";
+    private $data;
+    public function __construct($data) {
+        $this->data = $data;
+    }
+    public function Injection($data) {
+        return json_encode($data);
+    }
+    public function Extraction($data) {
+        return json_decode($data,1);
+    }
+    public function Validation($data): bool {
+        return is_array($data);
+    }
+}
+```
+This is a data type that specifies a column as being of type **JSON** (``const Query = "JSON";``) (since PHP arrays cannot be directly stored in tables). This class encodes input data to JSON and decodes the output. As a result, you don’t need to encode and decode your data during the project process (which means your project code becomes more concise). Additionally, by using validations, we prevent data other than PHP arrays from entering.
+
+**Pay attention to these examples:**
+
+```php
+<?php
+namespace MyLanous\DataTypes;
+class Varchar implements \Lanous\db\Structure\DataType {
+    const Query = "varchar";
+    private $data;
+    public function __construct($data) { $this->data = $data; }
+    public function Injection($data) { return $data; }
+    public function Extraction($data) { return $data; }
+    public function Validation($data): bool { return true; }
+    public function test($a,$b) : string {
+        return "Hello ".$this->data." p.a = ".$a." and p.b = ".$b;
+    }
+}
+```
+
+And when outputting:
+
+```
+$data->LastRow($data::ObjectType)->first_name->methods->test("foo","bar");
+// Hello mohammad p.a = foo and p.b = bar
+```
+
+> [!NOTE]
+> Don’t worry, the tutorial for extracting data from tables will be explained soon.
+
+# Data injection
+
+To enter data into a data table, we use the OpenTable method. This method has several sub-methods, including:
+- SubMethod :
+    - **Select**: Retrieves data from the table.
+    - **Update**: Modifies existing data.
+    - **Insert**: Adds new data to the table.
+    - **Delete**: Removes data from the table.
+    - **Describe**: Provides information about the table structure.
+    - **QuickFind**: Searches for specific data.
+    - **Order**: Sorts data.
+    - **Where**: Filters data based on specified conditions.
+For inserting data into the database, we use the ``Insert()`` method. This class utilizes two additional methods: ``Set()`` and ``Push()``.
+
+**Set**: Assigns data to a specific column.
+**Push**: Injects the data into the table.
+The output of the Set method is the same as that of Insert, which means you can use multiple Set calls simultaneously.
+Consider the following example to see how data is inserted into a table:
+
+```php
+$Table = $database->OpenTable (MyLanous\Tables\Users::class);
+$UsersTable->Insert()
+    ->Set("first_name","Mohammad")
+    ->Set("last_name","Azad")
+    ->Set("password","123456789")
+->Push();
+```
+> [!IMPORTANT]
+> The input “OpenTable” refers to the name of the data table class. Do not mistakenly enter the table name itself. If you use a different name instead of the class name, you will likely encounter this error.
+
+```php
+$Table = $database->OpenTable ("Users");
+```
+> [!CAUTION]
+> PHP Fatal error:  Uncaught Lanous\db\Exceptions\Structure: The class you entered as a data table either does not exist or probably has a structural problem.
+
+> [!IMPORTANT]
+> In the data table structure, we have defined an ``Injection Edit`` for **first_name and last_name**. Therefore, the inputs (**Mohammad** and **Azad**) are stored as **mohammad** and **azad** (strtolower), respectively. Additionally, for the **password**, we have used both **Injection Edit and Extract Edit**. This means that throughout the project, the **output for the password remains 123456789, but in the database, it is stored in base64_encode format**.
+```php
+// {project_name}/Tables/Users.php
+        # ---------- Data Handling
+        $this->Injection("first_name")
+            ->Edit(fn($data) => strtolower($data));
+        $this->Injection("last_name")
+            ->Edit(fn($data) => strtolower($data));
+
+        # Base64 encode/decode password
+        $this->Injection("password")
+            ->Edit(fn($data) => base64_encode($data));
+        $this->Extract("password")
+            ->Edit(fn($data) => base64_decode($data));
+```
+**Table Row**
+
+![image](https://github.com/lanous/db/assets/158297225/eb0bfd6b-6d47-4272-86e1-3d1db0182c13)
+
+**In the code:**
+```php
+...
+    $data->LastRow()["password"];
+    // 123456789
+...
+```
+
