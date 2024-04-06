@@ -901,4 +901,5 @@ Consider the following example:
 
 > [!TIP]
 > If the table structures have been correctly created and the data in the tables do not have any issues, the likelihood of encountering this error is very low, so don’t worry.
-> better safe than sorry :people_hugging:
+> but better safe than sorry :people_hugging:
+
