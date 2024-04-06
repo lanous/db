@@ -245,6 +245,7 @@ Below, we explain the functions related to the columns:
 
 ```php
 <?php
+# project_name = MyLanous
 # MyLanous/Tables/Information.php
 
 namespace MyLanous\Table;
@@ -252,23 +253,23 @@ namespace MyLanous\Table;
 class Information extends \Lanous\db\Structure\Table {
     public function __construct() {
         $this->AddColumn("user_id")
-            ->DataType(\MyLanous\DataTypes\Integer::class)
+            ->DataType(\MyLanous\DataTypes\Integer::class) # MyLanous/DataTypes/Integer.php
             ->Size(255)
             ->AutoIncrement(true)
             ->Constraints(Primary: true);
 
         $this->AddColumn("first_name")
-            ->DataType(\MyLanous\DataTypes\Varchar::class)
+            ->DataType(\MyLanous\DataTypes\Varchar::class) # MyLanous/DataTypes/Varchar.php
             ->Size(255)
             ->Constraints(not_null: true);
 
         $this->AddColumn("last_name")
-            ->DataType(\MyLanous\DataTypes\Varchar::class)
+            ->DataType(\MyLanous\DataTypes\Varchar::class) # MyLanous/DataTypes/Varchar.php
             ->Size(255)
             ->Constraints(not_null: true);
 
         $this->AddColumn("password")
-            ->DataType(\MyLanous\DataTypes\Varchar::class)
+            ->DataType(\MyLanous\DataTypes\Varchar::class) # MyLanous/DataTypes/Varchar.php
             ->Size(255)
             ->Constraints(not_null: true);
 
