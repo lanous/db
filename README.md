@@ -122,7 +122,7 @@ After completing the installation, include autoload.php in the main project file
 <?php
 
 include("vendor/autoload.php");
-
+use Lanous\db as Database;
         ...
 
 ?>
