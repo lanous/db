@@ -984,3 +984,40 @@ array(4) {
 */
 ```
 
+## Foreign Key | Parent-Child tables
+
+By using Foreign keys and configuring them, you can link data from one column to another, creating data dependencies. For example, you can store user identity information in a table and link other tables (such as access levels, transactions, etc.) to this identity table. In essence, the identity table and the linked tables are recognized as parent-child relationships.
+
+```php
+$database
+    ->Setting # Open Settings
+        ->Table(MyLanous\Tables\Wallet::class) # Navigate to the Wallet table settings.
+            ->FOREIGN_KEY("user_id",MyLanous\Tables\Users::class,"id");
+            # Link the user_id column (associated with the wallet table) to the id column of the Users table.
+# The Users table is considered the parent in this relationship.
+```
+
+Now, during data retrieval, extract data from another table using the Parent and Child methods
+
+```php
+RowReturn : function Child ($table_class) : RowReturn
+```
+```php
+RowReturn : function Parent() : RowReturn
+```
+
+When you are **working with the Users table**, you can access the Wallet table through the **Child** method.
+
+And when you are **working with the Wallet table**, you can access the Users table through the Parent method.
+
+
+```php
+$Wallet = $database->OpenTable (MyLanous\Tables\Wallet::class);
+$UserID1 = $Wallet->Select(column: "*")->Extract(primary_value: 1);
+$Users = $UserID1->Parent()->LastRow();
+
+
+$Users = $database->OpenTable (MyLanous\Tables\Users::class);
+$UserID1 = $Users->Select(column: "*")->Extract(primary_value: 1);
+$Wallet = $UserID1->Child(MyLanous\Tables\Wallet::class)->LastRow();
+```
