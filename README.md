@@ -1021,3 +1021,52 @@ $Users = $database->OpenTable (MyLanous\Tables\Users::class);
 $UserID1 = $Users->Select(column: "*")->Extract(primary_value: 1);
 $Wallet = $UserID1->Child(MyLanous\Tables\Wallet::class)->LastRow();
 ```
+
+## Plugins
+
+Plugins are classes to which you can send data and create functions that perform processing outside the main part of your project. This approach can prevent redundancy in project components and also make your project more modular.
+
+When you run the project, a folder named Plugins is automatically created in your project directory. The files in this folder are executed automatically, and the database is passed to it (no need for configuration or explicit inclusion).
+
+You are not allowed to create a constructor for this class after inheriting from it. After inheritance, you have access to three functions:
+```php
+OpenTable(string $table_class) : Table
+```
+Used to open a table and perform processing within it.
+
+```php
+Call(string $plugin_class, $data=null)
+```
+Used to include another plugin.
+
+```php
+NewJob() : Job
+```
+Used to create a new job.
+
+Consider the following example:
+
+```php
+<?php
+#location: {project_name}/Plugins/Test.php
+
+namespace MyLanous\Plugins;
+
+class Test extends \Lanous\db\Structure\Plugins {
+    public function GetName ($id) {
+        $Users = $this->OpenTable(\MyLanous\Tables\Users::class);
+        $Find = $Users->Where("id","=",$id);
+        $User = $Users->Select("*")->Extract($Find)->LastRow();
+        return $User['first_name'];
+    }
+}
+```
+```php
+<?php
+#location: index.php
+
+$UsersPlugin = $database->LoadPlugin(MyLanous\Plugins\Test::class);
+
+echo "Hi ".$UsersPlugin->GetName (1);
+# Hi mohammad
+```
