@@ -1,16 +1,17 @@
 # Introduction
 
-The purpose of creating this project is to utilize various database types without the need to learn their structures and commands.
-Initially, learning this project might seem a bit complex, but using it is enjoyable.
-The flexibility of this project is high, and it has significant potential for further development.
-These documents are written for users of this project, and development-related documentation is located in the src directory.
+The primary objective of this project is to seamlessly interact with various database systems without the need for in-depth knowledge of their intricate structures and complex commands. Its inherent flexibility empowers developers, and its potential for further enhancement is substantial. These accompanying documents cater specifically to users of this project, while development-related documentation resides within the ``src`` directory.
 
-One of the drawbacks of this project may appear to be its initial complexity, which might lead one to think it’s not suitable for open-source projects. However, if your project is personal, this library can be quite helpful because:
+# Navigating Complexity
 
-Automatic Data Encryption: Data encryption is performed automatically.
-Extensible Data Type Structures: The data type structures are extensible.
-Avoids Database Complexity: It stays clear of database intricacies.
-High Scalability: It is highly scalable.
+At first glance, the project’s initial complexity might deter some, leading them to question its suitability for open-source endeavors. However, let us delve into the reasons why this library can be an invaluable asset, especially for personal projects:
+
+**Automatic Data Encryption**: The project handles data encryption seamlessly, ensuring that sensitive information remains secure.
+**Extensible Data Type Structures**: The data type structures are designed to be extensible, accommodating diverse use cases.
+**Abstraction from Database Complexity**: By shielding developers from the intricacies of database management, this project simplifies interactions.
+**Scalability**: The architecture is inherently scalable, allowing seamless growth as your project evolves.
+
+In summary, while the initial learning curve may be challenging, the rewards of using this project far outweigh the effort invested. Whether you’re embarking on a personal project or contributing to open-source initiatives, consider leveraging this powerful tool to streamline your database interactions.
 
 # Overview
 
@@ -29,8 +30,14 @@ $data = $Table->Select(
 $data->LastRow($data::ObjectType)->first_name->value;
 ```
 
-As you can see, everything is in an object-oriented manner. In fact, your data table should be defined within a class structure with specific rules and principles so that the data can be handled effectively throughout the project.
+The elegance of this project lies in its adherence to object-oriented principles. As you’ve astutely observed, everything is meticulously organized within class structures. Specifically, your data tables should be encapsulated within well-defined class hierarchies, following established rules and principles. Let’s delve into the key aspects:
 
+1. **Class-Based Data Tables**: Each data table corresponds to a class. This encapsulation ensures that data remains neatly compartmentalized, enhancing readability and maintainability.
+2. **Principled Design**: Define your classes with care. Consider the relationships between tables, inheritance hierarchies, and the appropriate access modifiers. A thoughtful design ensures efficient data manipulation.
+3. **Effective Data Handling**: By leveraging class methods, you can perform data operations seamlessly. Whether it’s querying, updating, or inserting records, encapsulating these actions within class methods promotes consistency and reduces redundancy.
+4. **Abstraction and Encapsulation**: Hide implementation details behind well-defined interfaces. This abstraction shields the rest of your project from the intricacies of data handling, promoting modularity.
+5. **Data Integrity and Validation**: Implement validation checks within your class methods. Ensure that data adheres to predefined rules before it enters the database. This prevents erroneous entries and maintains data integrity.
+ 
 ## Example of defined table
 
 ```php
@@ -95,70 +102,104 @@ class ArrayData implements \Lanous\db\Structure\DataType {
 }
 ```
 # Idioms
-## Database
-a storage location for a collection of data that is accessible and editable.
-## Database management system (D B S M)
-A software that uses a set of tools for managing database data, responsible for communication and interaction with the database.
-## Tables
-Data is stored systematically and categorized. Each table holds a group of related data. For example, the ‘user information’ table stores users’ identity information such as name, surname, and birthdate. This helps ensure that data is appropriately placed.
-## Columns
-Columns essentially define what the data is related to. Columns are members of tables and hold the data within them. For example, the “last name” column places users’ last names within it. Each column has specific settings, including data type, data size, constraints, and other properties.
-### Primary
-When a column is designated as the primary key, it acts like a unique fingerprint for data rows and prevents duplicate values in that column. Once a column is identified as the primary key, data can be edited using this primary key. Typically, this column is named "id" and throughout the program, this ID is used to identify users.
-### Foreign Key
-Referencing a column to the primary key of another table creates data consistency and establishes a relationship between them.
+## General
+### Database
+A database serves as a structured repository for a collection of data. It provides accessibility and editability, acting as a vital foundation for various applications and systems.
+### Database Management System (DBSM)
+A Database Management System (DBMS) is sophisticated software equipped with a suite of tools for efficiently handling database data. It serves as the bridge between applications and the underlying database, facilitating seamless communication and interaction.
+### Tables: Organized Data Repositories
+Data within a database is systematically organized into tables. Each table represents a distinct category of related information. For instance, consider the “user information” table, which houses essential identity details such as names, surnames, and birthdates. This structured approach ensures that data finds its rightful place within the system.
+### Columns: The Essence of Data
+Columns lie at the heart of data representation. They define the nature of the information stored. Within a table, columns hold specific data points. For example, the “last name” column neatly captures users’ surnames. Each column boasts unique attributes, including data type, size, constraints, and other relevant properties.
+##### A. Primary Columns: Uniqueness and Identification
+When a column assumes the role of a primary key, it becomes a distinctive identifier—a digital fingerprint—for individual data rows. By enforcing uniqueness, it prevents duplicate values within that column. Typically, the primary key column bears the name “id.” Throughout the program, this ID serves as the universal means of identifying users.
+##### B. Foreign Key Columns: Building Relationships
+A foreign key establishes a crucial relationship between tables. By referencing the primary key of another table, it ensures data consistency. This linkage allows data to flow seamlessly across related tables, fostering integrity and coherence.
 
-# Setting up
-## Project installation
-Install the lanous\db package using composer.
+# Setting Up the Lanous\db Package: A Step-by-Step Guide
+## 1. Installation via Composer
+Begin by installing the Lanous\db package using Composer.
 
 ```shell
 composer require lanous\db
 ```
+## 2. Autoloading
+Once the installation is complete, it’s time to seamlessly integrate the package into your project.
 
-After completing the installation, include autoload.php in the main project file (which can be index.php).
+in your main project file (often named ``index.php``), include the Composer-generated autoload.php. This file acts as the gateway, ensuring that all necessary classes and dependencies are loaded:
 
 ```php
 <?php
+// index.php
 
 include("vendor/autoload.php");
+
 use Lanous\db as Database;
-        ...
+
+// Your project logic begins here...
+// Initialize the Lanous\db package and start interacting with your database.
+
+// Example:
+$database = new Database();
+// Perform database operations using $database...
 
 ?>
 ```
-After the project is loaded successfully, you need to connect to the database through the connect class of the project. Before connecting, it is necessary to create a config class.
-Your config class should include these constants: ``hostname``, ``username``, ``password``, ``database`` - ``dbsm``, ``project_name``, ``project_dir``
+## Embrace the Power of Lanous\db
+With the package seamlessly integrated, you’re now equipped to harness the capabilities of Lanous\db. Whether you’re querying, updating, or managing data, let this elegant solution simplify your database interactions.
 
-An example of a config class:
+Remember, elegance lies not only in functionality but also in the meticulous steps taken to achieve it. Happy coding!
 
+## Setting Up Database Connectivity: A Pragmatic Approach
+Once your project is successfully loaded, the next crucial step is establishing a seamless connection to the database. This pivotal task is accomplished through the Connect class within your project. However, before diving into the connection process, let’s lay the groundwork by creating a robust configuration class
+
+## The Config Class: Constants for Clarity
+Your Config class serves as the cornerstone of your database setup.
+
+It encapsulates essential constants that dictate how your project interacts with the database. These constants include:
+
+``hostname``: The database server’s address (e.g., '127.0.0.1').
+
+``username``: The authorized database user (e.g., 'root').
+
+``password``: The secret key granting access.
+
+``database``: The specific database name to connect to (e.g., 'lanous').
+
+``dbsm``: The Database Management System (DBMS) in use (e.g., 'mysql').
+
+``project_name``: A descriptive identifier for your project (e.g., 'MyLanous').
+
+``project_dir``: The absolute path to your project directory (automatically determined).
+
+Here’s an illustrative example of a well-structured LanousConfig class:
 ```php
 class LanousConfig {
     const hostname = '127.0.0.1';
     const username = 'root';
     const password = '';
-    const database = "lanous";
-    const dbsm = "mysql";
-    const project_name = "MyLanous";
+    const database = 'lanous';
+    const dbsm = 'mysql';
+    const project_name = 'MyLanous';
     const project_dir = __DIR__;
 }
 ```
-
-Furthermore, for configuring the DBMS, you can use library constants. This approach helps prevent typing errors and also informs you about the supported DBMS options (with PHPDoc)
-
+### Leveraging Library Constants: Clarity and Safety
+To configure the DBMS effectively, utilize library constants. These constants not only prevent typographical errors but also serve as informative markers for supported DBMS options. Consider this approach:
 ```php
-    ...
-    const dbsm = Database\Lanous::DBSM_Mysql; # Database\Lanous::DBSM_(X)
-    ...
+    // ...
+    const dbsm = Database\Lanous::DBSM_Mysql; // Choose the appropriate constant
+    // ...
 ```
 
-After creating the configuration class, it’s time to establish a connection with the database.
-
+## Initiating the Connection
+With your configuration class in place, it’s time to forge the connection:
 ```php
 $database = new Database\Connect(new LanousConfig);
 ```
+And just like that, your project gains access to the database, ready to perform its data magic.
 
-### Final code:
+## Final code
 
 ```php
 <?php
@@ -180,66 +221,65 @@ class LanousConfig {
 $database = new Database\Connect(new LanousConfig);
 ```
 
-After the initial execution, a directory is created in the configured folder (``project_dir``) with the name specified in the configuration class (``project_name``).
+Upon the initial execution, a directory is meticulously crafted within the configured folder (denoted by project_dir). This directory bears the name specified in the configuration class (project_name).
 
-Follow the instructions to examine each of these directories.
+Now, let’s delve into the essential steps for examining each of these directories:
 
-## Set data table structure - create a new table
+## Data Table Structure: The Heart of Your Project
 
-The ‘Tables’ folder is the location where data table structures are stored. The filenames essentially represent the class and table names (meaning all three should match). To create a data table, you need to create a namespace with the project name and inherit from \Lanous\db\Structure\Table
+The ‘Tables’ folder serves as the repository for your data table structures. Within this hallowed directory, filenames play a pivotal role—they essentially mirror the class and table names. Therefore, consistency across all three components—filename, class name, and table name—is paramount.
 
-### General Structure
+To create a new data table, follow this precise procedure:
+
+Namespace Formation: Establish a namespace that aligns with your project name. This namespace encapsulates the essence of your data table structure.
+Inheritance ...: Inherit from the ``\Lanous\db\Structure\Table`` class. This inheritance lays the foundation for your data table, imbuing it with essential properties and methods.
+
+As you craft your data tables, let clarity and consistency be your guiding stars. :star:
+
+### Creating Data Table Structures: A Methodical Approach
+Behold the general structure:
+
+#### General Structure
 ```php
 namespace {project_name}\Tables;
 
 class {table_name} extends \Lanous\db\Structure\Table {
 
-...
+    // Your table-specific code resides here...
 
 }
 ```
+#### Completing the Table Structure: Adding Columns
+With the foundation laid, it’s time to breathe life into your data table. Columns play a starring role, and we invoke functions from the parent class to define their essence.
 
-We complete the table structure and add columns using the functions defined in the parent class.
+Let’s explore the functions related to columns:
 
-Below, we explain the functions related to the columns:
+```php
+AddColumn(string $name)
+```
+This function specifies the **name of the column**. Within its realm, several sub-methods come into play:
 
-### Functions
+- ``DataType($object)``: Determines the data type (refer to the list of supported data types in DataTypes\x.php).
+- ``Size($size)``: Sets the data type size.
+- ``AutoIncrement(bool $value)``: Enables auto-increment if set to true.
+- ``Enum($class)``: Establishes an enum as the column’s value.
+- ``Constraints(bool $Primary=false, bool $not_null=false, bool $UNIQUE=false, $default=false, $check=false)``: Configures constraints for the column.
 
-``AddColumn(string $name)``: Specifies the name of the column.
+```php
+Injection($column_name)
+```
+Before data enters the database, it passes through this function. Sub-methods include:
 
-    -Sub-Methods:
-    
-        -DataType($object): The name of the data type class (List: DataTypes\x.php)
-        
-        -Size($size): Data type size
+- ``Evaluation(callable $callback)``: Validates data.
+- ``Edit(callable $callback)``: Allows data editing via a callable.
 
-        -AutoIncrement(bool $value): Auto increment if set to true
+```php
+Extract($column_name)
+```
+After data emerges from the database, it undergoes further processing. Sub-methods include:
 
-        -Enum($class): Set enum as value
-
-        -Constraints(
-            bool $Primary=false,
-            bool $not_null=false,
-            bool $UNIQUE=false,
-            $default=false,
-            $check=false
-        ): Constraints settings
-
-``Injection($column_name)``: Before data is entered into the database, it passes through this function.
-
-    -Sub-Methods:
-    
-        -Evaluation(callable $callback): Data validation
-        
-        -Edit(callable $callback): Data editing using callable
-        
-``Extract($column_name)``: After data is retrieved from the database, it also passes through this function.
-
-    -Sub-Methods:
-    
-        -Evaluation(callable $callback): Data validation
-        
-        -Edit(callable $callback): Data editing using callable
+- ``Evaluation(callable $callback)``: Validates retrieved data.
+- ``Edit(callable $callback)``: Facilitates data editing using a callable.
 
 ### An example of the table class
 
@@ -285,43 +325,48 @@ After creating the class and saving the file, the process of table creation will
 
 Continue reading the descriptions related to data types to expand them.
 
-## Data Type Development
+## Project Folder Structure and Data Type Definitions
 
-After creating project folders, another folder named DataTypes is automatically generated. All data types that need to be defined for columns are created here. These data types implement \Lanous\db\Structure\DataType.
+Upon the initiation of project directories, a supplementary folder designated as DataTypes is autonomously generated. This folder serves as a repository for all requisite data types pertinent to the column definitions. These data types are instantiated from the ``\Lanous\db\Structure\DataType`` interface.
 
-The DataType class requires four functions for definition:
+DataType Class Essentials
 
-``__construct``: Data is initially sent to this function when constructing the DataType class. If you intend to extend the data type, store it in a private property.
+Constructor (``__construct``): This function is invoked during the instantiation of the DataType class, receiving the initial data payload. Should there be a necessity to augment the data type, it is advisable to preserve it within a private attribute.
 
-``Injection``: Before data enters the database (whether through an INSERT or an UPDATE), it is sent to this function. The output of this function becomes the column value. If the data remains unchanged, remember to use ``return $data;``.
+Data Injection (``Injection``): Prior to the database assimilation of data (be it via INSERT or UPDATE operations), the data is processed through this function. The resultant output is then allocated as the column’s value. In scenarios where the data remains unaltered, it is imperative to employ ``return $data;``.
 
-``Extraction``: After data is extracted and before it reaches your hands, it enters this function, and the output is sent to you. Similar to before, if no modifications are needed, don’t forget to use ``return $data;``.
+Data Extraction (``Extraction``): Subsequent to data retrieval and antecedent to user reception, the data is channeled through this function, with the output being conveyed to the user. Analogous to the previous function, should there be no requisite modifications, the utilization of ``return $data;`` is essential.
 
-``Validation``: Use this function to prevent certain data from entering the database. **It is only called;** consider using exceptions.
+Data Validation (``Validation``): This function serves as a gatekeeper, precluding the entry of specific data into the database. It is customarily invoked; the deployment of exceptions is recommended for optimal efficacy.
 
-Additionally, any function you define other than these is accessible in the output data via the methods property. Any property you add to this class is also accessible alongside the main output (value, methods).
-### Consider the following examples:
+Furthermore, any function delineated beyond the aforementioned is accessible within the output data through the methods property. Correspondingly, any attribute appended to this class is attainable in conjunction with the principal output (value, methods).
+
+Illustrative Example
 ```php
-<?php
 namespace MyLanous\DataTypes;
+
 class ArrayData implements \Lanous\db\Structure\DataType {
     const Query = "JSON";
     private $data;
+
     public function __construct($data) {
         $this->data = $data;
     }
+
     public function Injection($data) {
         return json_encode($data);
     }
+
     public function Extraction($data) {
-        return json_decode($data,1);
+        return json_decode($data, true);
     }
+
     public function Validation($data): bool {
         return is_array($data);
     }
 }
 ```
-This is a data type that specifies a column as being of type **JSON** (``const Query = "JSON";``) (since PHP arrays cannot be directly stored in tables). This class encodes input data to JSON and decodes the output. As a result, you don’t need to encode and decode your data during the project process (which means your project code becomes more concise). Additionally, by using validations, we prevent data other than PHP arrays from entering.
+This exemplar delineates a data type that designates a column as conforming to the JSON type (const Query = "JSON";). Given that PHP arrays are not natively storable within tables, this class encodes the incoming data into JSON format and decodes the retrieved data accordingly.
 
 **Pay attention to these examples:**
 
