@@ -1044,6 +1044,8 @@ NewJob() : Job
 ```
 Used to create a new job.
 
+Plugin classes must inherit from ``\Lanous\db\Structure\Plugins``
+
 Consider the following example:
 
 ```php
@@ -1061,6 +1063,16 @@ class Test extends \Lanous\db\Structure\Plugins {
     }
 }
 ```
+
+In your project files, you use the ``LoadPlugin`` method to load plugins. The method signature is as follows:
+```php
+function LoadPlugin(string $plugin_class, mixed $data=null) : {plugin_class}
+```
+
+In the **first parameter**, pass the **name of the plugin class**.
+In the **second parameter**, if necessary, you can provide **additional data**.
+The data within the plugin class can be accessed via ``$this->data``
+
 ```php
 <?php
 #location: index.php
