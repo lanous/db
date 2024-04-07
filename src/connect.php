@@ -4,7 +4,10 @@ namespace Lanous\db;
 
 class Connect extends Lanous {
 
-    private $project_name,$project_directory,$dbsm,$database;
+    private $project_name;
+    private $project_directory;
+    private $config;
+    private $database;
     public $Setting;
 
     /**
@@ -14,9 +17,9 @@ class Connect extends Lanous {
     public function __construct(object $config) {
         try {
             $this->CheckConfig($config);
+            $this->config = $config;
             $supported_dbsm = ['mysql'];
-            $this->dbsm = $config::dbsm;
-            if (!in_array($this->dbsm,$supported_dbsm))
+            if (!in_array($config::dbsm,$supported_dbsm))
                 throw new Exceptions\NonSupport(Exceptions\NonSupport::ERR_DBSM);
             $host = $config::hostname;
             $username = $config::username;
@@ -30,7 +33,7 @@ class Connect extends Lanous {
             $this->database = new \PDO("mysql:host=$host;dbname=".$db_name, $username, $password);
             $this->database->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             $this->MakeTables ();
-            $this->Setting = new Settings\Settings($this->database,$this->dbsm);
+            $this->Setting = new Settings\Settings($this->database,$this->config);
         } catch(\PDOException $e) {
             throw new Exceptions\init(Exceptions\init::ERR_CNCTERR);
         }
@@ -41,7 +44,7 @@ class Connect extends Lanous {
      * @param string $table_name The class name where table settings are stored is.
      */
     public function OpenTable (string $table_name) : Table\Table {
-        return new Table\Table($table_name,$this->dbsm,$this->database);
+        return new Table\Table($table_name,$this->config,$this->database);
     }
     /**
      * Load a plugin from the <code>project\Plugins directory</code>
@@ -49,7 +52,7 @@ class Connect extends Lanous {
      * @param mixed $data If you want to send specific data to the plugin, set it in this parameter.
      */
     public function LoadPlugin (string $plugin_class,mixed $data=null) : object {
-        return new $plugin_class($this->database,$this->dbsm,$data);
+        return new $plugin_class($this->database,$this->config,$data);
     }
     /**
      * Get a list of all data tables
@@ -62,7 +65,7 @@ class Connect extends Lanous {
      * Create a new job
      */
     public function NewJob () : Jobs\Job {
-        return new Jobs\Job($this->database,$this->dbsm);
+        return new Jobs\Job($this->database,$this->config);
     }
 
 
@@ -135,7 +138,7 @@ class Connect extends Lanous {
                 throw new Exceptions\Structure(Exceptions\Structure::ERR_NMESPCE);
             if (!in_array(strtolower($table_name),$this->GetTables())){
                 $data = new $class_name();
-                $MakeQuery = $this->MakeQuery($this->dbsm)->MakeTable($table_name, $data->Result());
+                $MakeQuery = $this->MakeQuery($this->config)->MakeTable($table_name, $data->Result());
                 $this->database->exec($MakeQuery);
             }
         },$Tables);

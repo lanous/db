@@ -5,9 +5,9 @@ namespace Lanous\db\Jobs;
 class Job {
     private $database,$dbsm;
     private $datas,$primarys,$sensitivity;
-    public function __construct($database,$dbsm) {
+    public function __construct($database,object $config) {
         $this->database = $database;
-        $this->dbsm = $dbsm;
+        $this->dbsm = $config::dbsm;
     }
     
     /**

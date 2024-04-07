@@ -6,10 +6,10 @@ class Update extends \Lanous\db\Lanous {
     use \Lanous\db\Traits\ValuePreparation;
 
     private $where,$new_values=[];
-    private $table_name,$dbsm,$database;
-    public function __construct($table_name,$dbsm,$database){
+    private $table_name,$config,$database;
+    public function __construct($table_name,object $config,$database){
         $this->table_name = $table_name;
-        $this->dbsm = $dbsm;
+        $this->config = $config;
         $this->database = $database;
     }
     /**
@@ -31,7 +31,7 @@ class Update extends \Lanous\db\Lanous {
         if ($where != null and $primary_value != null)
             throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_IFEINPR);
         if ($primary_value != null) {
-            $where = new \Lanous\db\Table\Table($this->table_name,$this->dbsm,$this->database);
+            $where = new \Lanous\db\Table\Table($this->table_name,$this->config,$this->database);
             $find_primary = new $this->table_name();
             $find_primary = $find_primary->Result();
             $find_primary = $find_primary[\Lanous\db\Structure\Table::Result["Settings"]];
@@ -43,7 +43,7 @@ class Update extends \Lanous\db\Lanous {
 
         $class_ref = new \ReflectionClass($this->table_name);
         $table_name = $class_ref->getShortName();
-        $query = $this->MakeQuery($this->dbsm)->Update($table_name, $this->new_values, $where);
+        $query = $this->MakeQuery($this->config)->Update($table_name, $this->new_values, $where);
         return $this->database->exec($query);
     }
 }

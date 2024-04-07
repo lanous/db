@@ -15,8 +15,8 @@ class Lanous {
     
     const DBSM_Mysql = "mysql";
 
-    final protected function MakeQuery($dbsm) {
-        $dbsm = ucfirst($dbsm);
+    final protected function MakeQuery(object $config) : object {
+        $dbsm = ucfirst($config::dbsm);
         $class = "\\Lanous\\db\\Query\\".$dbsm;
         return new $class();
     }
