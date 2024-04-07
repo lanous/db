@@ -903,3 +903,84 @@ Consider the following example:
 > If the table structures have been correctly created and the data in the tables do not have any issues, the likelihood of encountering this error is very low, so don’t worry.
 > but better safe than sorry :people_hugging:
 
+## Callback
+Edit all data via callable You can retrieve and edit data using the callback method.
+
+Your callback function should accept two parameters: the column name (parameter one) and the column value (parameter two) sent to you. The output of your function will be set as the value.
+
+```php
+RowReturn : function Callback (callable $callback)
+```
+
+Examples:
+
+```php
+$Users = $database->OpenTable (MyLanous\Tables\Users::class);
+$UserID1 = $Users->Select(column: "*")->Extract(primary_value: 1);
+$UserID1->Callback(function ($column_name,$value) {
+    echo "Column name: $column_name - Column value: $value".PHP_EOL;
+});
+/*
+Column name: id - Column value: 1
+Column name: first_name - Column value: mohammad
+Column name: last_name - Column value: azad
+...
+*/
+```
+
+> [!NOTE]
+> data that changes via the callback is only applied locally and is not sent to the database
+
+```php
+$Users = $database->OpenTable (MyLanous\Tables\Users::class);
+$UserID1 = $Users->Select(column: "*")->Extract(primary_value: 1);
+$callback_test = $UserID1->Callback(function ($column_name,$value) {
+    if ($column_name == "first_name"){
+        return "new name";
+    }
+});
+$callback_test->FirstRow(RowReturn::ArrayType);
+/*
+array(4) {
+  ["id"]=> int(1)
+  ["first_name"]=> string(8) "new name"
+  ["last_name"]=> string(4) "azad"
+  ["password"]=> string(0) ""
+}
+*/
+```
+
+```php
+$Users = $database->OpenTable (MyLanous\Tables\Users::class);
+$UserID1 = $Users->Select(column: "*")->Extract(primary_value: 1);
+$callback_test = $UserID1->Callback(function ($column_name,$value) {
+    if ($column_name == "first_name"){
+        return "new name";
+    }
+});
+$callback_in_callback = $callback_test->Callback(function ($column_name,$value) {
+    if ($column_name == "last_name"){
+        return "new last name";
+    }
+});
+
+$callback_in_callback->FirstRow();
+/*
+array(4) {
+  ["id"]=> int(1)
+  ["first_name"]=> string(8) "new name"
+  ["last_name"]=> string(4) "new last name"
+  ["password"]=> string(0) ""
+}
+*/
+$callback_test->FirstRow();
+/*
+array(4) {
+  ["id"]=> int(1)
+  ["first_name"]=> string(8) "new name"
+  ["last_name"]=> string(4) "azad"
+  ["password"]=> string(0) ""
+}
+*/
+```
+
