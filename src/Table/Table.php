@@ -3,11 +3,11 @@
 namespace Lanous\db\Table;
 
 class Table extends \Lanous\db\Lanous {
-    private $dbsm,$table_name,$database;
-    public function __construct($table_name,$dbsm,$database) {
+    private $config,$table_name,$database;
+    public function __construct($table_name,object $config,$database) {
         if(!is_subclass_of($table_name,\Lanous\db\Structure\Table::class))
             throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_TABLEND);
-        $this->dbsm = $dbsm;
+        $this->config = $config;
         $this->table_name = $table_name;
         $this->database = $database;
     }
@@ -20,7 +20,7 @@ class Table extends \Lanous\db\Lanous {
      * @param int $offset Offset (can only be used if limit is set)
      */
     public function Select(string $column="*",bool $distinct=false,object $order_by=new \stdClass(),int $limit=0,int $offset=0) {
-        return new Select($this->table_name,$this->dbsm,$this->database,$column,[
+        return new Select($this->table_name,$this->config,$this->database,$column,[
             "distinct"=>$distinct,
             "order_by"=>$order_by,
             "limit"=>$limit,
@@ -32,20 +32,20 @@ class Table extends \Lanous\db\Lanous {
      * @return Update The output of a class includes Edit and Push methods.
      */
     public function Update() : Update {
-        return new Update($this->table_name,$this->dbsm,$this->database);
+        return new Update($this->table_name,$this->config,$this->database);
     }
     /**
      * This method is used to add a new row to the table.
      */
     public function Insert() : Insert {
-        return new Insert($this->table_name,$this->dbsm,$this->database);
+        return new Insert($this->table_name,$this->config,$this->database);
     }
     /**
      * Delete a row from the table
      * @param $where must be passed with the Where method <b>Note:</b> If the where parameter is not passed, all the data in the table will be deleted.
      */
     public function Delete(Where $where=null) : bool {
-        $Delete = new Delete($this->table_name,$this->dbsm,$this->database,$where);
+        $Delete = new Delete($this->table_name,$this->config,$this->database,$where);
         return $Delete->result;
     }
     /**

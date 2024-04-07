@@ -14,10 +14,29 @@ class LanousConfig {
     const project_dir = __DIR__;
 }
 
+
+
 $database = new Database\Connect(new LanousConfig);
 
+$database->Setting->Table(MyLanous\Tables\Wallet::class)
+    ->FOREIGN_KEY("user_id",MyLanous\Tables\Users::class,"id");
+
+
 $Wallet = $database->OpenTable (MyLanous\Tables\Wallet::class);
+$UserID1 = $Wallet->Select(column: "*")->Extract(primary_value: 1);
+$Users = $UserID1->Parent()->LastRow();
+
+
 $Users = $database->OpenTable (MyLanous\Tables\Users::class);
+$UserID1 = $Users->Select(column: "*")->Extract(primary_value: 1);
+$Wallet = $UserID1->Child(MyLanous\Tables\Wallet::class);
+var_dump($Wallet);
+
+/*
+Column name: id - Column value: 1
+Column name: first_name - Column value: mohammad
+Column name: last_name - Column value: azad
+*/
 
 /*
 $Users->Insert()
@@ -44,9 +63,7 @@ $Wallet->Insert()
 ->Push();
 */
 
-$database->Setting->Table(MyLanous\Tables\Wallet::class)
-    ->FOREIGN_KEY("user_id",MyLanous\Tables\Users::class,"id");
-
+/*
 try {
 
     $Job = $database->NewJob();
@@ -90,7 +107,7 @@ try {
         echo ("Your inventory is insufficient.");
     }
 }
-
+*/
 
 /*
 $Table = $database->OpenTable (MyLanous\Tables\Users::class);

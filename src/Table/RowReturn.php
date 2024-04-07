@@ -32,12 +32,15 @@ class RowReturn {
      */
     const ObjectType = 5;
     public $Rows;
-    private $dbsm,$database,$table_name,$CleanRows;
-    public function __construct ($rows,$dbsm,$database,$table_name){
+    private $config;
+    private $database;
+    private $table_name;
+    private $CleanRows;
+    public function __construct ($rows,object $config,$database,$table_name){
         $this->Rows = $rows;
         $this->CleanRows = $rows;
         $this->table_name = $table_name;
-        $this->dbsm = $dbsm;
+        $this->config = $config;
         $this->database = $database;
 
         $Rows = $this->Rows;
@@ -77,19 +80,63 @@ class RowReturn {
             $value = $this->ValuePreparation($this->table_name,$column_name,$value,self::Preparationinjection);
         },$callback);
         $data = $Rows;
-        return new $this($data,$this->dbsm,$this->database,$this->table_name);
+        return new $this($data,$this->config,$this->database,$this->table_name);
     }
 
-    public function Child ($table_class,$mode=self::ArrayType) {
-        $Table = new Table($table_class,$this->dbsm,$this->database);
-        $reference = $Table->Describe()["reference"] ?? throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_RFRNCNF);
+    public function Child ($table_class) {
+        $ChildTable = new Table($table_class,$this->config,$this->database);
+        // Check the reference
+        $reference = $ChildTable->Describe()["reference"] ?? throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_RFRNCNF);
+        // save column reference (child)
         $column_reference = $reference['column_reference'];
+        // save column
         $column_name = $reference['column_name'];
+
+        $table_reference = $reference['table_reference'];
+        $table_reference = $this->config::project_name."\\Tables\\".$table_reference;
+
+        $child_data = [];
+        foreach($this->Rows as $RowID=>$Data) {
+            $child_primary_value = $Data[$column_reference]->value;
+            $Where = $ChildTable->Where($column_name,"=",$child_primary_value);
+            $Data = $ChildTable->Select("*")->Extract($Where)->LastRow(self::ArrayType);
+            array_walk($Data,function (&$value,$column_name) use ($table_class) {
+                $value = $this->ValuePreparation($table_class,$column_name,$value,self::Preparationinjection);
+            });
+            $child_data[$child_primary_value] = $Data;
+        }
+        return new $this($child_data,$this->config,$this->database,$table_class);
+
+        /*
         $LastRowResult = $this->LastRow (self::ArrayType);
         $value_reference_column = $LastRowResult[$column_reference];
         $Where = $Table->Where($column_name,"=",$value_reference_column);
-        return $Table->Select("*")->Extract($Where)->LastRow($mode);
+        return $Table->Select("*")->Extract($Where);
+        */
     }
+    public function Parent() {
+
+        // find parent table
+        $CurrentTable = new Table($this->table_name,$this->config,$this->database);
+        $reference = $CurrentTable->Describe()["reference"] ?? throw new \Lanous\db\Exceptions\Structure(\Lanous\db\Exceptions\Structure::ERR_RFRNCNF);
+        $column_name = $reference['column_name'];
+        $column_reference = $reference['column_reference'];
+        $table_reference = $reference['table_reference'];
+        $table_reference = $this->config::project_name."\\Tables\\".$table_reference;
+        $ParentTable = new Table($table_reference,$this->config,$this->database);
+        $parent_data = [];
+        foreach($this->Rows as $RowID=>$Data) {
+            $parent_primary_value = $Data[$column_name]->value;
+            $Where = $ParentTable->Where($column_reference,"=",$parent_primary_value);
+            $Data = $ParentTable->Select("*")->Extract($Where)->LastRow(self::ArrayType);
+            array_walk($Data,function (&$value,$column_name) use ($column_reference,$table_reference) {
+                $value = $this->ValuePreparation($table_reference,$column_name,$value,self::Preparationinjection);
+            });
+            $parent_data[$parent_primary_value] = $Data;
+        }
+        return new $this($parent_data,$this->config,$this->database,$table_reference);
+    }
+
     public function MachineLerning () {
         return new \Lanous\db\MachineLearning\MachineLearning($this->Rows);
     }
@@ -100,7 +147,7 @@ class RowReturn {
         } elseif ($mode == self::ArrayType) {
             $return = [];
             array_walk($data,function ($data,$column_name) use (&$return) {
-                $return[$column_name] = $data->value;
+                $return[$column_name] = $data->value ?? null;
             });
             return $return;
         } elseif ($mode == self::Keys) {
@@ -112,13 +159,13 @@ class RowReturn {
         } elseif ($mode == self::Methods) {
             $get_methods = [];
             array_walk($data,function ($data,$column_name) use (&$get_methods) {
-                $get_methods[$column_name] = $data->methods;
+                $get_methods[$column_name] = $data->methods ?? null;
             });
             return (object) $get_methods;
         } elseif ($mode == self::Values) {
             $return = [];
             array_walk($data,function ($data,$column_name) use (&$return) {
-                $return[] = $data->value;
+                $return[] = $data->value ?? null;
             });
             return $return;
         }

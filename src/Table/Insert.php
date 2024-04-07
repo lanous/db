@@ -5,12 +5,17 @@ namespace Lanous\db\Table;
 class Insert extends \Lanous\db\Lanous {
     use \Lanous\db\Traits\ValuePreparation;
     
-    private $data,$table_data,$table_name,$dbsm,$column_name,$columns_list,$database;
+    private $data;
+    private $table_data;
+    private $table_name;
+    private $config;
+    private $columns_list;
+    private $database;
     
-    public function __construct($table_name,$dbsm,$database) {
+    public function __construct($table_name,object $config,$database) {
         $this->table_name = $table_name;
-        $this->dbsm = $dbsm;
         $this->database = $database;
+        $this->config = $config;
         $data = new $table_name();
         $this->table_data = $data->Result();
         $columns = $this->table_data[\Lanous\db\Structure\Table::Result["Columns"]];
@@ -31,7 +36,7 @@ class Insert extends \Lanous\db\Lanous {
     public function Push() : bool {
         $class_ref = new \ReflectionClass($this->table_name);
         $table_name = $class_ref->getShortName();
-        $query = $this->MakeQuery($this->dbsm)->Insert($table_name, $this->data);
+        $query = $this->MakeQuery($this->config)->Insert($table_name, $this->data);
         return $this->database->exec($query);
     }
 

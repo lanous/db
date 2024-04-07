@@ -13,5 +13,10 @@ class Wallet extends \Lanous\db\Structure\Table {
             ->DataType(\MyLanous\DataTypes\Decimal::class)
             ->Size(10, 2)
             ->Constraints(not_null: true);
+
+        $this->AddColumn("irt")
+            ->DataType(\MyLanous\DataTypes\Decimal::class)
+            ->Size(10, 2)
+            ->Constraints(not_null: true);
     }
 }
