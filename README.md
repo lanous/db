@@ -7,9 +7,13 @@ The primary objective of this project is to seamlessly interact with various dat
 At first glance, the project’s initial complexity might deter some, leading them to question its suitability for open-source endeavors. However, let us delve into the reasons why this library can be an invaluable asset, especially for personal projects:
 
 **Automatic Data Encryption**: The project handles data encryption seamlessly, ensuring that sensitive information remains secure.
+
 **Extensible Data Type Structures**: The data type structures are designed to be extensible, accommodating diverse use cases.
+
 **Abstraction from Database Complexity**: By shielding developers from the intricacies of database management, this project simplifies interactions.
+
 **Scalability**: The architecture is inherently scalable, allowing seamless growth as your project evolves.
+
 
 In summary, while the initial learning curve may be challenging, the rewards of using this project far outweigh the effort invested. Whether you’re embarking on a personal project or contributing to open-source initiatives, consider leveraging this powerful tool to streamline your database interactions.
 
